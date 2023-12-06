@@ -41,6 +41,8 @@ test("getX", () => {
 test("parse", () => {
   expect(parse("")).toEqual([]);
 
+  expect(parse(".")).toEqual([{ direction: [], shape: "none", x: 0, y: 0 }]);
+
   expect(parse("e.e/nsns/w.w")).toEqual([
     { direction: "east", x: -1, y: 0 },
     { direction: [], shape: "none", x: 0, y: 0 },

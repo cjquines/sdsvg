@@ -19,17 +19,17 @@ export enum Shape {
   Circle = "circle",
 }
 
-export type Point = {
-  x: number;
-  y: number;
-};
-
 export type Attributes = {
   direction: Direction | Direction[];
   label: string;
   color: Color | string;
   dashed: boolean;
   shape: Shape;
+};
+
+export type Point = {
+  x: number;
+  y: number;
 };
 
 export type Dancer = Point & Attributes;
