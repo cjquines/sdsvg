@@ -1,5 +1,5 @@
 {
-  "name": "svg-squares",
+  "name": "sdsvg",
   "version": "0.1.0",
   "description": "render square dance formations as svgs",
   "license": "MIT",
@@ -15,12 +15,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cjquines/svg-squares.git"
+    "url": "git+https://github.com/cjquines/sdsvg.git"
   },
   "bugs": {
-    "url": "https://github.com/cjquines/svg-squares/issues"
+    "url": "https://github.com/cjquines/sdsvg/issues"
   },
-  "homepage": "https://github.com/cjquines/svg-squares#readme",
+  "homepage": "https://github.com/cjquines/sdsvg#readme",
   "dependencies": {
     "@svgdotjs/svg.js": "^3.2.0"
   },

@@ -1,43 +1,52 @@
-enum Direction {
+export enum Direction {
   North = "north",
   East = "east",
   South = "south",
   West = "west",
 }
 
-enum Color {
+export enum Color {
   Red = "red",
   Green = "green",
   Blue = "blue",
   Yellow = "yellow",
 }
 
-type Point = {
+export enum Shape {
+  None = "none",
+  Square = "square",
+  Circle = "circle",
+}
+
+export type Point = {
   x: number;
   y: number;
 };
 
-type Dancer = Point & {
+export type Attributes = {
   direction: Direction | Direction[];
   label: string;
   color: Color | string;
   dashed: boolean;
+  shape: Shape;
 };
 
-enum Geometry {
+export type Dancer = Point & Attributes;
+
+export enum Geometry {
   None = "none",
   Bigon = "bigon",
   Square = "square",
   Hexagon = "hexagon",
 }
 
-type Options = {
+export type Options = {
+  dancerSize: number;
+  noseSize: number;
+  horizontalSpace: number;
+  verticalSpace: number;
+  strokeWidth: number;
+  phantomDashArray: number;
   geometry: Geometry;
   origin: Point;
-  noseSize: number;
-  squareSize: number;
-  horizontalSpace: number;
-  veritcalSpace: number;
-  phantomDash: string;
-  strokeWidth: number;
 };

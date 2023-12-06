@@ -1,14 +1,14 @@
-# svg-squares
+# sdsvg
 
 render square dance formations as SVGs
 
 ```ts
-import { formationToSvg, Formation } from "svg-squares";
+import { formationToSvg, Formation } from "sdsvg";
 
 formationToSvg(`1> 2> . . / . . 6< 5<`);
 
 const formation = new Formation(`e.e/nsns/w.w`, {
-  squareSize: 16,
+  dancerSize: 16,
   strokeWidth: 1,
 });
 formation.renderTo(document.getElementById("#svg"));
