@@ -1,53 +1,85 @@
-import { Attributes, Color, Dancer, Direction, Shape } from ".";
+import { Attributes, Color, Dancer, Direction, Point, Shape } from ".";
 
-type Symbol =
-  | { type: "direction"; value: Direction | Direction[] }
-  | { type: "label"; value: string }
-  | { type: "color"; value: Color }
-  | { type: "dashed"; value: boolean }
-  | { type: "shape"; value: Shape };
-
-const symbols: { [key: string]: Symbol | Symbol[] } = {
-  "^": { type: "direction", value: Direction.North },
-  ">": { type: "direction", value: Direction.East },
-  v: { type: "direction", value: Direction.South },
-  V: { type: "direction", value: Direction.South },
-  "<": { type: "direction", value: Direction.West },
-  n: { type: "direction", value: Direction.North },
-  e: { type: "direction", value: Direction.East },
-  s: { type: "direction", value: Direction.South },
-  w: { type: "direction", value: Direction.West },
+const SYMBOLS: { [key: string]: Partial<Attributes> } = {
+  "^": { direction: Direction.North },
+  ">": { direction: Direction.East },
+  v: { direction: Direction.South },
+  V: { direction: Direction.South },
+  "<": { direction: Direction.West },
+  n: { direction: Direction.North },
+  e: { direction: Direction.East },
+  s: { direction: Direction.South },
+  w: { direction: Direction.West },
   // "headliner", "sideliner"
-  H: { type: "direction", value: [Direction.North, Direction.South] },
-  S: { type: "direction", value: [Direction.East, Direction.West] },
-  ",": { type: "direction", value: [] },
-  "@": { type: "direction", value: [] },
-  "*": { type: "direction", value: [] },
-  "+": [
-    { type: "direction", value: [] },
-    { type: "label", value: "+" },
-    { type: "shape", value: Shape.None },
-  ],
-  ".": [
-    { type: "direction", value: [] },
-    { type: "shape", value: Shape.None },
-  ],
-  o: { type: "label", value: "o" },
-  x: { type: "label", value: "x" },
-  0: { type: "label", value: "0" },
-  1: { type: "label", value: "1" },
-  2: { type: "label", value: "2" },
-  3: { type: "label", value: "3" },
-  4: { type: "label", value: "4" },
-  5: { type: "label", value: "5" },
-  6: { type: "label", value: "6" },
-  7: { type: "label", value: "7" },
-  8: { type: "label", value: "8" },
-  9: { type: "label", value: "9" },
-  r: { type: "color", value: Color.Red },
-  b: { type: "color", value: Color.Blue },
-  g: { type: "color", value: Color.Green },
-  y: { type: "color", value: Color.Yellow },
-  p: { type: "dashed", value: true },
-  O: { type: "shape", value: Shape.Circle },
+  H: { direction: [Direction.North, Direction.South] },
+  S: { direction: [Direction.East, Direction.West] },
+  ",": { direction: [] },
+  "@": { direction: [] },
+  "*": { direction: [] },
+  "+": { direction: [], label: "+", shape: Shape.None },
+  ".": { direction: [], shape: Shape.None },
+  o: { label: "o" },
+  x: { label: "x" },
+  0: { label: "0" },
+  1: { label: "1" },
+  2: { label: "2" },
+  3: { label: "3" },
+  4: { label: "4" },
+  5: { label: "5" },
+  6: { label: "6" },
+  7: { label: "7" },
+  8: { label: "8" },
+  9: { label: "9" },
+  r: { color: Color.Red },
+  b: { color: Color.Blue },
+  g: { color: Color.Green },
+  y: { color: Color.Yellow },
+  p: { dashed: true },
+  O: { shape: Shape.Circle },
 };
+
+export function parseRow(row: string): Partial<Attributes>[] {
+  const result: Partial<Attributes>[] = [];
+  let partial: Partial<Attributes> = {};
+
+  const pushIfDone = () => {
+    if (partial.direction) {
+      result.push(partial);
+      partial = {};
+    }
+  };
+
+  for (const char of row) {
+    const attrs = SYMBOLS[char];
+    if (attrs) {
+      partial = { ...partial, ...attrs };
+      pushIfDone();
+    }
+  }
+  pushIfDone();
+
+  return result;
+}
+
+export function getX(i: number, length: number): number {
+  return i + 0.5 - length / 2;
+}
+
+export function parse(spec: string): (Point & Partial<Attributes>)[];
+export function parse(spec: string, defaultAttrs: Attributes): Dancer[];
+export function parse(
+  spec: string,
+  defaultAttrs: Partial<Attributes> = {}
+): Partial<Dancer>[] {
+  return spec
+    .split(/\n|\//)
+    .map(parseRow)
+    .flatMap((row, y) =>
+      row.map((attrs, i) => ({
+        ...defaultAttrs,
+        ...attrs,
+        x: getX(i, row.length),
+        y,
+      }))
+    );
+}

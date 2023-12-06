@@ -6,6 +6,7 @@ export enum Direction {
 }
 
 export enum Color {
+  Black = "black",
   Red = "red",
   Green = "green",
   Blue = "blue",
