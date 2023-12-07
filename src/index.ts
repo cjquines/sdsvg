@@ -47,7 +47,7 @@ export type Options = {
   horizontalSpace: number;
   verticalSpace: number;
   strokeWidth: number;
-  phantomDashArray: number;
+  phantomDashArray: number[];
   geometry: Geometry;
   origin: Point;
 };
