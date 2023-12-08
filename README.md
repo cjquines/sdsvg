@@ -22,6 +22,10 @@ formationToSvg(
 );
 ```
 
+![](https://raw.githubusercontent.com/cjquines/sdsvg/main/src/__image_snapshots__/sample1.png)
+![](https://raw.githubusercontent.com/cjquines/sdsvg/main/src/__image_snapshots__/sample2.png)
+![](https://raw.githubusercontent.com/cjquines/sdsvg/main/src/__image_snapshots__/sample3.png)
+
 ## inspiration
 
 - [tex-squares.sty](https://www.mit.edu/~tech-squares/resources/tex/)
