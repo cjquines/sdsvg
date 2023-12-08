@@ -105,12 +105,10 @@ export class Renderer {
     // label
     this.draw
       .text(labelText)
-      .remove()
       .fill({ color: toHex(color ?? label.color, label.opacity) })
       .font("family", label.family)
       .font("size", label.size)
-      .center(x, y)
-      .putIn(group);
+      .center(x, y);
 
     group.putIn(this.draw);
   }

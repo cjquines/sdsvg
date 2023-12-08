@@ -33,7 +33,7 @@ test("render", async () => {
     await drawDancers([
       { x: 0, y: 0, direction: ["north", "south"], shape: "circle" },
       { x: 1, y: 0, direction: [], label: "+", shape: "none" },
-      { x: 2, y: 0, direction: "west", color: "red", rotate: 20 },
+      { x: 2, y: 0, direction: "west", color: "red", label: "F", rotate: 120 },
     ])
   ).toMatchImageSnapshot();
 
