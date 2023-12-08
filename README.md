@@ -8,10 +8,10 @@ import { formationToSvg, Formation } from "sdsvg";
 formationToSvg("1> 2> . . / . . 6< 5<");
 
 const formation = new Formation("e.e/nsns/w.w", {
-  dancerSize: 16,
-  strokeWidth: 1,
+  body: { opacity: 0.5 },
+  nose: { distance: 9 },
 });
-formation.renderTo(document.getElementById("#svg"));
+formation.toElement(document.getElementById("#svg"));
 
 formationToSvg(
   [

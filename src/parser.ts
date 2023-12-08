@@ -1,4 +1,4 @@
-import { Attributes, Color, Dancer, Direction, Shape } from ".";
+import { Attributes, Color, Dancer, Direction, Shape } from "./dancer";
 
 const SYMBOLS: { [key: string]: Partial<Attributes> } = {
   "^": { direction: Direction.North },
@@ -38,19 +38,14 @@ const SYMBOLS: { [key: string]: Partial<Attributes> } = {
   O: { shape: Shape.Circle },
 };
 
-const defaultAttrs: Omit<Attributes, "direction"> = {
-  label: "",
-  dashed: false,
-};
-
-export function parseRow(row: string): Attributes[] {
-  const result: Attributes[] = [];
-  let partial: Partial<Attributes> = defaultAttrs;
+export function parseRow(row: string): Partial<Attributes>[] {
+  const result: Partial<Attributes>[] = [];
+  let partial: Partial<Attributes> = {};
 
   const pushIfDone = () => {
     if (partial.direction) {
-      result.push(partial as Attributes);
-      partial = defaultAttrs;
+      result.push(partial);
+      partial = {};
     }
   };
 
@@ -70,12 +65,19 @@ export function getX(i: number, length: number): number {
   return i + 0.5 - length / 2;
 }
 
+export const defaultAttrs: Omit<Attributes, "direction"> = {
+  label: "",
+  dashed: false,
+  rotate: 0,
+};
+
 export function parse(spec: string): Dancer[] {
   return spec
     .split(/\n|\//)
     .map(parseRow)
     .flatMap((row, y) =>
       row.map((attrs, i) => ({
+        ...defaultAttrs,
         ...attrs,
         x: getX(i, row.length),
         y,

@@ -1,14 +1,14 @@
 import SVG from "@svgdotjs/svg.js";
 
 import { Dancer, Direction, Point, Shape, toHex } from "./dancer";
-import { Options, PartialOptions, extendOptions } from "./options";
+import { Options, extendOptions } from "./options";
 
-export class Render {
+export class Renderer {
   options: Options;
   draw: SVG.Svg;
 
-  constructor(options?: PartialOptions, draw?: SVG.Svg) {
-    this.options = extendOptions(options ?? {});
+  constructor(options?: Options, draw?: SVG.Svg) {
+    this.options = options ?? extendOptions({});
     this.draw = draw ?? SVG.SVG();
   }
 
@@ -31,7 +31,9 @@ export class Render {
       return undefined;
     }
 
-    const body = shape === Shape.Square ? this.draw.rect() : this.draw.circle();
+    const body = (
+      shape === Shape.Square ? this.draw.rect() : this.draw.circle()
+    ).remove();
     const { x, y } = this.getCenter(dancer);
     body.size(size, size).center(x, y);
 
@@ -63,8 +65,8 @@ export class Render {
     const { x, y } = this.getCenter(dancer);
     const noseX = x + mulX * distance;
     const noseY = y + mulY * distance;
-    const nose = this.draw.circle();
-    nose.size(size).center(noseX, noseY);
+    const nose = this.draw.circle().remove();
+    nose.size(size, size).center(noseX, noseY);
 
     const mask = this.draw.mask();
     mask.add(nose.clone().fill("#fff")).add(body.fill("#000"));
@@ -74,9 +76,11 @@ export class Render {
   }
 
   drawDancer(dancer: Dancer) {
-    const { color, dashed, direction, label: labelText } = dancer;
+    const { color, dashed, direction, label: labelText, rotate } = dancer;
     const { body, nose, label, stroke } = this.options;
     const { x, y } = this.getCenter(dancer);
+
+    const group = this.draw.group();
 
     // body
     this.getBody(dancer)
@@ -85,22 +89,30 @@ export class Render {
         color: toHex(color ?? body.color, 1),
         width: stroke.width,
         dasharray: dashed ? stroke.phantomDashArray.join(",") : undefined,
-      });
+      })
+      .putIn(group);
 
     // noses
     (Array.isArray(direction) ? direction : [direction]).forEach((direction) =>
       this.getNose(dancer, direction)
         ?.fill({ color: toHex(color ?? nose.color, nose.opacity) })
         .stroke({ color: toHex(color ?? nose.color, 1), width: stroke.width })
+        .putIn(group)
     );
+
+    group.rotate(rotate, x, y);
 
     // label
     this.draw
       .text(labelText)
+      .remove()
       .fill({ color: toHex(color ?? label.color, label.opacity) })
       .font("family", label.family)
       .font("size", label.size)
-      .center(x, y);
+      .center(x, y)
+      .putIn(group);
+
+    group.putIn(this.draw);
   }
 
   resizeImage() {

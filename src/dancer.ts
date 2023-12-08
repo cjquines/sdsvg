@@ -41,6 +41,7 @@ export type Attributes = {
   direction: Direction | Direction[];
   label: string;
   dashed: boolean;
+  rotate: number;
   color?: Color | string;
   shape?: Shape;
 };

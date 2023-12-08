@@ -47,7 +47,7 @@ type DeepPartial<T> = T extends object
 
 export type PartialOptions = DeepPartial<Options>;
 
-export const extendOptions = (options: DeepPartial<Options>): Options => {
+export function extendOptions(options: PartialOptions): Options {
   const result = options;
 
   result.body ??= {};
@@ -85,4 +85,4 @@ export const extendOptions = (options: DeepPartial<Options>): Options => {
   result.layout.origin ??= { x: 0, y: 0 };
 
   return result as Options;
-};
+}
