@@ -1,39 +1,47 @@
 import SVG from "@svgdotjs/svg.js";
 
-import { Dancer, Direction, Options, Point, Shape } from ".";
+import { Dancer, Direction, Point, Shape, toHex } from "./dancer";
+import { Options, PartialOptions, extendOptions } from "./options";
 
 export class Render {
   options: Options;
   draw: SVG.Svg;
 
-  constructor(options: Options, draw?: SVG.Svg) {
-    this.options = options;
+  constructor(options?: PartialOptions, draw?: SVG.Svg) {
+    this.options = extendOptions(options ?? {});
     this.draw = draw ?? SVG.SVG();
   }
 
   getCenter(dancer: Dancer): Point {
     const { x, y } = dancer;
-    const { dancerSize, horizontalSpace, verticalSpace } = this.options;
+    const { body, space } = this.options;
+
     return {
-      x: x * (dancerSize + horizontalSpace),
-      y: y * (dancerSize + verticalSpace),
+      x: x * (body.size + space.horizontal),
+      y: y * (body.size + space.vertical),
     };
   }
 
   getBody(dancer: Dancer): SVG.Shape | undefined {
-    const { shape } = dancer;
-    const { dancerSize } = this.options;
+    const { shape = this.options.body.shape } = dancer;
+    const {
+      body: { size },
+    } = this.options;
     if (shape === Shape.None) {
       return undefined;
     }
+
     const body = shape === Shape.Square ? this.draw.rect() : this.draw.circle();
     const { x, y } = this.getCenter(dancer);
-    body.size(dancerSize, dancerSize).center(x, y);
+    body.size(size, size).center(x, y);
+
     return body;
   }
 
   getNose(dancer: Dancer, direction: Direction): SVG.Shape | undefined {
-    const { dancerSize, noseSize } = this.options;
+    const {
+      nose: { distance, size },
+    } = this.options;
     const body = this.getBody(dancer);
     if (!body) {
       return undefined;
@@ -53,11 +61,10 @@ export class Render {
     })();
 
     const { x, y } = this.getCenter(dancer);
-    const distance = dancerSize / 2 + noseSize / 4;
     const noseX = x + mulX * distance;
     const noseY = y + mulY * distance;
     const nose = this.draw.circle();
-    nose.size(noseSize).center(noseX, noseY);
+    nose.size(size).center(noseX, noseY);
 
     const mask = this.draw.mask();
     mask.add(nose.clone().fill("#fff")).add(body.fill("#000"));
@@ -67,40 +74,41 @@ export class Render {
   }
 
   drawDancer(dancer: Dancer) {
-    const { direction, label } = dancer;
-    const { dancerSize, strokeWidth } = this.options;
+    const { color, dashed, direction, label: labelText } = dancer;
+    const { body, nose, label, stroke } = this.options;
     const { x, y } = this.getCenter(dancer);
-
-    // TODO: color
-    // TODO: dashed
 
     // body
     this.getBody(dancer)
-      ?.fill({ color: "#0000" })
-      .stroke({ color: "#000", width: strokeWidth });
+      ?.fill({ color: toHex(color ?? body.color, body.opacity) })
+      .stroke({
+        color: toHex(color ?? body.color, 1),
+        width: stroke.width,
+        dasharray: dashed ? stroke.phantomDashArray.join(",") : undefined,
+      });
 
     // noses
-    const directions = Array.isArray(direction) ? direction : [direction];
-    directions.forEach((direction) =>
-      this.getNose(dancer, direction)?.fill({ color: "#000" })
+    (Array.isArray(direction) ? direction : [direction]).forEach((direction) =>
+      this.getNose(dancer, direction)
+        ?.fill({ color: toHex(color ?? nose.color, nose.opacity) })
+        .stroke({ color: toHex(color ?? nose.color, 1), width: stroke.width })
     );
 
     // label
     this.draw
-      .text(label)
-      .fill({ color: "#000" })
-      .font("family", "Open Sans")
-      .font("size", dancerSize * 0.8)
+      .text(labelText)
+      .fill({ color: toHex(color ?? label.color, label.opacity) })
+      .font("family", label.family)
+      .font("size", label.size)
       .center(x, y);
   }
 
-  resizeImage(padding: number) {
-    const box = this.draw.bbox();
-    this.draw.viewbox(
-      box.x - padding,
-      box.y - padding,
-      box.w + 2 * padding,
-      box.h + 2 * padding
-    );
+  resizeImage() {
+    const {
+      space: { padding: p },
+    } = this.options;
+
+    const { x, y, w, h } = this.draw.bbox();
+    this.draw.viewbox(x - p, y - p, w + 2 * p, h + 2 * p);
   }
 }

@@ -22,7 +22,8 @@
   },
   "homepage": "https://github.com/cjquines/sdsvg#readme",
   "dependencies": {
-    "@svgdotjs/svg.js": "^3.2.0"
+    "@svgdotjs/svg.js": "^3.2.0",
+    "colorjs.io": "^0.4.5"
   },
   "devDependencies": {
     "@types/jest-image-snapshot": "^6.3.0",
