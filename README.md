@@ -9,7 +9,7 @@ formationToSvg("1> 2> . . / . . 6< 5<");
 
 const formation = new Formation("e.e/nsns/w.w", {
   body: { opacity: 0.2 },
-  nose: { distance: 2 },
+  nose: { size: 2 },
 });
 formation.toElement(document.getElementById("#svg"));
 
@@ -23,7 +23,9 @@ formationToSvg(
 ```
 
 ![](https://raw.githubusercontent.com/cjquines/sdsvg/main/src/__image_snapshots__/sample1.png)
+
 ![](https://raw.githubusercontent.com/cjquines/sdsvg/main/src/__image_snapshots__/sample2.png)
+
 ![](https://raw.githubusercontent.com/cjquines/sdsvg/main/src/__image_snapshots__/sample3.png)
 
 ## inspiration
