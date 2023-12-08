@@ -4,7 +4,7 @@ import { Dancer } from "./dancer";
 import { Options, PartialOptions, extendOptions } from "./options";
 import { parse } from "./parser";
 import { Renderer } from "./renderer";
-import { makeSvg } from "./util";
+import { makeSvg } from "./utils";
 
 export class Formation {
   dancers: Dancer[];

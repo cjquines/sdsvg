@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 import { extendOptions } from "./options";
 import { Renderer } from "./renderer";
 import { svgToPng } from "./testutils";
-import { makeSvg } from "./util";
+import { makeSvg } from "./utils";
 
 expect.extend({ toMatchImageSnapshot });
 
