@@ -1,11 +1,5 @@
-import { Color, Point, Shape } from "./dancer";
-
-export enum Geometry {
-  None = "none",
-  Bigon = "bigon",
-  Square = "square",
-  Hexagon = "hexagon",
-}
+import { Color, Shape } from "./dancer";
+import { Geometry } from "./geometry";
 
 export type Options = {
   body: {
@@ -37,7 +31,7 @@ export type Options = {
   };
   layout: {
     geometry: Geometry;
-    origin: Point;
+    origin: { x: number; y: number };
   };
 };
 
@@ -47,7 +41,7 @@ type DeepPartial<T> = T extends object
 
 export type PartialOptions = DeepPartial<Options>;
 
-export function extendOptions(options: PartialOptions): Options {
+export function makeOptions(options: PartialOptions): Options {
   const result = options;
 
   result.body ??= {};
@@ -57,8 +51,11 @@ export function extendOptions(options: PartialOptions): Options {
   result.body.opacity ??= 0;
 
   result.nose ??= {};
-  result.nose.size ??= result.body.size * 0.3;
-  result.nose.distance ??= result.body.size / 2 + result.nose.size / 4;
+  result.nose.size = result.body.size * 0.3 * (options.nose?.size ?? 1);
+  result.nose.distance =
+    result.body.size / 2 +
+    result.nose.size / 4 +
+    (options.nose?.distance ?? 0) * result.nose.size;
   result.nose.color ??= result.body.color;
   result.nose.opacity ??= 1;
 
@@ -70,15 +67,17 @@ export function extendOptions(options: PartialOptions): Options {
   ];
 
   result.label ??= {};
-  result.label.size ??= result.body.size * 0.8;
+  result.label.size = result.body.size * 0.8 * (options.label?.size ?? 1);
   result.label.family ??= "Open Sans";
   result.label.color ??= result.body.color;
   result.label.opacity ??= 1;
 
   result.space ??= {};
   result.space.padding ??= result.body.size / 2;
-  result.space.horizontal ??= result.body.size + result.nose.size;
-  result.space.vertical ??= result.body.size + result.nose.size;
+  result.space.horizontal =
+    (result.body.size + result.nose.size) * (options.space?.horizontal ?? 1);
+  result.space.vertical =
+    (result.body.size + result.nose.size) * (options.space?.vertical ?? 1);
 
   result.layout ??= {};
   result.layout.geometry ??= Geometry.None;

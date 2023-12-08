@@ -1,5 +1,7 @@
 import ColorJS from "colorjs.io";
 
+import { Point } from "./geometry";
+
 export enum Direction {
   North = "north",
   East = "east",
@@ -46,9 +48,7 @@ export type Attributes = {
   shape?: Shape;
 };
 
-export type Point = {
+export type Dancer = Attributes & {
   x: number;
   y: number;
 };
-
-export type Dancer = Point & Attributes;

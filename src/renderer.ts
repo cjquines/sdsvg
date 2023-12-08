@@ -1,18 +1,18 @@
 import SVG from "@svgdotjs/svg.js";
 
-import { Dancer, Direction, Point, Shape, toHex } from "./dancer";
-import { Options, extendOptions } from "./options";
+import { Dancer, Direction, Shape, toHex } from "./dancer";
+import { Options, makeOptions } from "./options";
 
 export class Renderer {
   options: Options;
   draw: SVG.Svg;
 
   constructor(options?: Options, draw?: SVG.Svg) {
-    this.options = options ?? extendOptions({});
+    this.options = options ?? makeOptions({});
     this.draw = draw ?? SVG.SVG();
   }
 
-  getCenter(dancer: Dancer): Point {
+  getCenter(dancer: Dancer): { x: number; y: number } {
     const { x, y } = dancer;
     const { body, space } = this.options;
 

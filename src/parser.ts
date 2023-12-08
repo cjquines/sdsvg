@@ -38,13 +38,15 @@ const SYMBOLS: { [key: string]: Partial<Attributes> } = {
   O: { shape: Shape.Circle },
 };
 
-export function parseRow(row: string): Partial<Attributes>[] {
-  const result: Partial<Attributes>[] = [];
+type AttrWithDirection = Partial<Attributes> & Pick<Attributes, "direction">;
+
+export function parseRow(row: string): AttrWithDirection[] {
+  const result: AttrWithDirection[] = [];
   let partial: Partial<Attributes> = {};
 
   const pushIfDone = () => {
     if (partial.direction) {
-      result.push(partial);
+      result.push(partial as AttrWithDirection);
       partial = {};
     }
   };
