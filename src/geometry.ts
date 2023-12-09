@@ -1,11 +1,14 @@
 import { Dancer } from "./dancer";
+import { Enumify } from "./utils";
 
-export enum Geometry {
-  None = "none",
-  Bigon = "bigon",
-  Square = "square",
-  Hexagon = "hexagon",
-}
+export const Geometry = {
+  None: "none",
+  Bigon: "bigon",
+  Square: "square",
+  Hexagon: "hexagon",
+} as const;
+
+export type Geometry = Enumify<typeof Geometry>;
 
 export class Point {
   constructor(public x: number, public y: number) {}

@@ -1,17 +1,17 @@
 import { SVG } from "@svgdotjs/svg.js";
 
 import { Dancer } from "./dancer";
+import { geometrize } from "./geometry";
 import { Options, PartialOptions, makeOptions } from "./options";
-import { parse } from "./parser";
+import { PartialDancer, dancerify, parse } from "./parser";
 import { Renderer } from "./renderer";
 import { makeSvg } from "./utils";
-import { geometrize } from "./geometry";
 
 export class Formation {
   dancers: Dancer[];
   options: Options;
 
-  constructor(input: string | Dancer[], options?: PartialOptions) {
+  constructor(input: string | PartialDancer[], options?: PartialOptions) {
     this.options = makeOptions(options ?? {});
     const {
       layout: { geometry, origin },
@@ -19,7 +19,7 @@ export class Formation {
 
     const dancers = typeof input === "string" ? parse(input) : input;
     this.dancers = dancers.flatMap((dancer) =>
-      geometrize(dancer, geometry, origin)
+      geometrize(dancerify(dancer), geometry, origin)
     );
   }
 
@@ -40,7 +40,7 @@ export class Formation {
 }
 
 export function formationToSvg(
-  input: string | Dancer[],
+  input: string | PartialDancer[],
   options?: PartialOptions
 ): string {
   return new Formation(input, options).toString();

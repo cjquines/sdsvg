@@ -1,21 +1,25 @@
 import ColorJS from "colorjs.io";
 
-import { Point } from "./geometry";
+import { Enumify } from "./utils";
 
-export enum Direction {
-  North = "north",
-  East = "east",
-  South = "south",
-  West = "west",
-}
+export const Direction = {
+  North: "north",
+  East: "east",
+  South: "south",
+  West: "west",
+} as const;
 
-export enum Color {
-  Black = "black",
-  Red = "red",
-  Green = "green",
-  Blue = "blue",
-  Yellow = "yellow",
-}
+export type Direction = Enumify<typeof Direction>;
+
+export const Color = {
+  Black: "black",
+  Red: "red",
+  Green: "green",
+  Blue: "blue",
+  Yellow: "yellow",
+} as const;
+
+export type Color = Enumify<typeof Color>;
 
 const COLOR_TO_HEX: { [color in Color]: string } = {
   [Color.Black]: "#000000",
@@ -33,11 +37,13 @@ export const toHex = (rawColor: Color | string, opacity: number): string => {
   return color.toString({ format: "hex" });
 };
 
-export enum Shape {
-  None = "none",
-  Square = "square",
-  Circle = "circle",
-}
+export const Shape = {
+  None: "none",
+  Square: "square",
+  Circle: "circle",
+} as const;
+
+export type Shape = Enumify<typeof Shape>;
 
 export type Attributes = {
   direction: Direction | Direction[];

@@ -73,16 +73,23 @@ export const defaultAttrs: Omit<Attributes, "direction"> = {
   rotate: 0,
 };
 
+export type PartialDancer = AttrWithDirection & { x: number; y: number };
+
+export function dancerify(dancer: PartialDancer): Dancer {
+  return { ...defaultAttrs, ...dancer };
+}
+
 export function parse(spec: string): Dancer[] {
   return spec
     .split(/\n|\//)
     .map(parseRow)
     .flatMap((row, y) =>
-      row.map((attrs, i) => ({
-        ...defaultAttrs,
-        ...attrs,
-        x: getX(i, row.length),
-        y,
-      }))
+      row.map((attrs, i) =>
+        dancerify({
+          ...attrs,
+          x: getX(i, row.length),
+          y,
+        })
+      )
     );
 }

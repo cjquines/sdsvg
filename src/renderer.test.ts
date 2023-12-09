@@ -2,6 +2,7 @@ import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { expect, test } from "vitest";
 
 import { makeOptions } from "./options";
+import { PartialDancer } from "./parser";
 import { Renderer } from "./renderer";
 import { svgToPng } from "./testutils";
 import { makeSvg } from "./utils";
@@ -10,7 +11,7 @@ expect.extend({ toMatchImageSnapshot });
 
 const defaultDancer = { x: 0, y: 0, direction: [], label: "", dashed: false };
 
-function drawDancers(dancers: any[]) {
+function drawDancers(dancers: PartialDancer[]) {
   const renderer = new Renderer(
     makeOptions({
       body: { size: 100 },
