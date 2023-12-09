@@ -1,11 +1,11 @@
+import { SVG } from "@svgdotjs/svg.js";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { expect, test } from "vitest";
 
 import { makeOptions } from "./options.js";
 import { PartialDancer } from "./parser.js";
 import { Renderer } from "./renderer.js";
-import { svgToPng } from "./testutils.js";
-import { makeSvg } from "./utils.js";
+import { makeSvg, svgToPng } from "./testutils.js";
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -23,7 +23,7 @@ async function drawDancers(dancers: PartialDancer[]) {
     makeOptions({
       body: { size: 100 },
     }),
-    await makeSvg()
+    SVG(makeSvg())
   );
   dancers.forEach((dancer) =>
     renderer.drawDancer({ ...defaultDancer, ...dancer })

@@ -1,13 +1,14 @@
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { expect, test } from "vitest";
 
-import { formationToSvg } from "./formation.js";
-import { svgToPng } from "./testutils.js";
+import { Formation, formationToSvg } from "./formation.js";
+import { makeSvg, svgToPng } from "./testutils.js";
 
 expect.extend({ toMatchImageSnapshot });
 
-async function toPng(...args: Parameters<typeof formationToSvg>) {
-  return svgToPng(await formationToSvg(...args));
+function toPng(...args: Parameters<typeof formationToSvg>) {
+  const svg = makeSvg();
+  return svgToPng(new Formation(...args).toString(svg));
 }
 
 test("render", async () => {

@@ -5,7 +5,6 @@ import { geometrize } from "./geometry.js";
 import { Options, PartialOptions, makeOptions } from "./options.js";
 import { PartialDancer, dancerify, parse } from "./parser.js";
 import { Renderer } from "./renderer.js";
-import { makeSvg } from "./utils.js";
 
 export class Formation {
   dancers: Dancer[];
@@ -32,8 +31,8 @@ export class Formation {
     this.drawDancers(new Renderer(this.options, SVG(element)));
   }
 
-  async toString(): Promise<string> {
-    const render = new Renderer(this.options, await makeSvg());
+  toString(element?: SVGSVGElement): string {
+    const render = new Renderer(this.options, element ? SVG(element) : SVG());
     this.drawDancers(render);
     return render.draw.svg();
   }
@@ -42,6 +41,6 @@ export class Formation {
 export function formationToSvg(
   input: string | PartialDancer[],
   options?: PartialOptions
-): Promise<string> {
+): string {
   return new Formation(input, options).toString();
 }
