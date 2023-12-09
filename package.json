@@ -1,6 +1,6 @@
 {
   "name": "sdsvg",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "render square dance formations as svgs",
   "license": "MIT",
   "author": "CJ Quines <cj@cjquines.com>",
@@ -23,7 +23,9 @@
   "homepage": "https://github.com/cjquines/sdsvg#readme",
   "dependencies": {
     "@svgdotjs/svg.js": "^3.2.0",
-    "colorjs.io": "^0.4.5",
+    "colorjs.io": "^0.4.5"
+  },
+  "optionalDependencies": {
     "svgdom": "^0.1.19"
   },
   "devDependencies": {
@@ -31,6 +33,7 @@
     "@types/svgdom": "^0.1.2",
     "jest-image-snapshot": "^6.3.0",
     "sharp": "^0.33.0",
+    "svgdom": "^0.1.19",
     "typescript": "^5.3.2",
     "vitest": "^1.0.1"
   }

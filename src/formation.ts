@@ -32,8 +32,8 @@ export class Formation {
     this.drawDancers(new Renderer(this.options, SVG(element)));
   }
 
-  toString(): string {
-    const render = new Renderer(this.options, makeSvg());
+  async toString(): Promise<string> {
+    const render = new Renderer(this.options, await makeSvg());
     this.drawDancers(render);
     return render.draw.svg();
   }
@@ -42,6 +42,6 @@ export class Formation {
 export function formationToSvg(
   input: string | PartialDancer[],
   options?: PartialOptions
-): string {
+): Promise<string> {
   return new Formation(input, options).toString();
 }

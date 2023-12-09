@@ -18,12 +18,12 @@ const defaultDancer = {
   rotate: 0,
 };
 
-function drawDancers(dancers: PartialDancer[]) {
+async function drawDancers(dancers: PartialDancer[]) {
   const renderer = new Renderer(
     makeOptions({
       body: { size: 100 },
     }),
-    makeSvg()
+    await makeSvg()
   );
   dancers.forEach((dancer) =>
     renderer.drawDancer({ ...defaultDancer, ...dancer })

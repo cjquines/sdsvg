@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "skipLibCheck": true,
     "strict": true,
     "rootDir": "src",
     "module": "esnext",
@@ -8,7 +7,9 @@
     "outDir": "dist",
     "target": "esnext",
     "sourceMap": true,
-    "declaration": true
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   },
   "include": ["src/**/*"]
 }

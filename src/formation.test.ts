@@ -6,8 +6,8 @@ import { svgToPng } from "./testutils.js";
 
 expect.extend({ toMatchImageSnapshot });
 
-function toPng(...args: Parameters<typeof formationToSvg>) {
-  return svgToPng(formationToSvg(...args));
+async function toPng(...args: Parameters<typeof formationToSvg>) {
+  return svgToPng(await formationToSvg(...args));
 }
 
 test("render", async () => {
