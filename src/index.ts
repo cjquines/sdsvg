@@ -1,8 +1,8 @@
-import { Color, Direction, Shape } from "./dancer";
-import { Formation, formationToSvg } from "./formation";
-import { Geometry } from "./geometry";
-import { PartialOptions } from "./options";
-import { PartialDancer, parse } from "./parser";
+import { Color, Direction, Shape } from "./dancer.js";
+import { Formation, formationToSvg } from "./formation.js";
+import { Geometry } from "./geometry.js";
+import { PartialOptions } from "./options.js";
+import { PartialDancer, parse } from "./parser.js";
 
 export { Formation, formationToSvg };
 

@@ -1,11 +1,11 @@
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { expect, test } from "vitest";
 
-import { makeOptions } from "./options";
-import { PartialDancer } from "./parser";
-import { Renderer } from "./renderer";
-import { svgToPng } from "./testutils";
-import { makeSvg } from "./utils";
+import { makeOptions } from "./options.js";
+import { PartialDancer } from "./parser.js";
+import { Renderer } from "./renderer.js";
+import { svgToPng } from "./testutils.js";
+import { makeSvg } from "./utils.js";
 
 expect.extend({ toMatchImageSnapshot });
 

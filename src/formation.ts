@@ -1,11 +1,11 @@
 import { SVG } from "@svgdotjs/svg.js";
 
-import { Dancer } from "./dancer";
-import { geometrize } from "./geometry";
-import { Options, PartialOptions, makeOptions } from "./options";
-import { PartialDancer, dancerify, parse } from "./parser";
-import { Renderer } from "./renderer";
-import { makeSvg } from "./utils";
+import { Dancer } from "./dancer.js";
+import { geometrize } from "./geometry.js";
+import { Options, PartialOptions, makeOptions } from "./options.js";
+import { PartialDancer, dancerify, parse } from "./parser.js";
+import { Renderer } from "./renderer.js";
+import { makeSvg } from "./utils.js";
 
 export class Formation {
   dancers: Dancer[];

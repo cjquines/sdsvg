@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 
-import { defaultAttrs, getX, parse, parseRow } from "./parser";
+import { defaultAttrs, getX, parse, parseRow } from "./parser.js";
 
 test("parseRow", () => {
   expect(parseRow("")).toEqual([]);

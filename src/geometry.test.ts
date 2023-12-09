@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 
-import { Geometry, geometrize } from "./geometry";
-import { Dancer } from "./dancer";
+import { Geometry, geometrize } from "./geometry.js";
+import { Dancer } from "./dancer.js";
 
 test("rotate", () => {
   expect(

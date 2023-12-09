@@ -1,5 +1,5 @@
-import { Dancer } from "./dancer";
-import { Enumify } from "./utils";
+import { Dancer } from "./dancer.js";
+import { Enumify } from "./utils.js";
 
 export const Geometry = {
   None: "none",

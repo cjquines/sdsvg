@@ -1,8 +1,8 @@
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { expect, test } from "vitest";
 
-import { formationToSvg } from "./formation";
-import { svgToPng } from "./testutils";
+import { formationToSvg } from "./formation.js";
+import { svgToPng } from "./testutils.js";
 
 expect.extend({ toMatchImageSnapshot });
 

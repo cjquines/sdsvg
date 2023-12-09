@@ -1,7 +1,7 @@
-import SVG from "@svgdotjs/svg.js";
+import * as SVG from "@svgdotjs/svg.js";
 
-import { Dancer, Direction, Shape, toHex } from "./dancer";
-import { Options, makeOptions } from "./options";
+import { Dancer, Direction, Shape, toHex } from "./dancer.js";
+import { Options, makeOptions } from "./options.js";
 
 export class Renderer {
   options: Options;

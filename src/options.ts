@@ -1,5 +1,5 @@
-import { Color, Shape } from "./dancer";
-import { Geometry } from "./geometry";
+import { Color, Shape } from "./dancer.js";
+import { Geometry } from "./geometry.js";
 
 export type Options = {
   body: {

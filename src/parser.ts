@@ -1,4 +1,4 @@
-import { Attributes, Color, Dancer, Direction, Shape } from "./dancer";
+import { Attributes, Color, Dancer, Direction, Shape } from "./dancer.js";
 
 const SYMBOLS: { [key: string]: Partial<Attributes> } = {
   "^": { direction: Direction.North },

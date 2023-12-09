@@ -1,6 +1,6 @@
 import ColorJS from "colorjs.io";
 
-import { Enumify } from "./utils";
+import { Enumify } from "./utils.js";
 
 export const Direction = {
   North: "north",
