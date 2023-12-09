@@ -9,7 +9,14 @@ import { makeSvg } from "./utils";
 
 expect.extend({ toMatchImageSnapshot });
 
-const defaultDancer = { x: 0, y: 0, direction: [], label: "", dashed: false };
+const defaultDancer = {
+  x: 0,
+  y: 0,
+  direction: [],
+  label: "",
+  dashed: false,
+  rotate: 0,
+};
 
 function drawDancers(dancers: PartialDancer[]) {
   const renderer = new Renderer(
