@@ -2,7 +2,7 @@ import { SVG } from "@svgdotjs/svg.js";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { expect, test } from "vitest";
 
-import { makeOptions } from "./options.js";
+import { PartialOptions, makeOptions } from "./options.js";
 import { PartialDancer } from "./parser.js";
 import { Renderer } from "./renderer.js";
 import { makeSvg, svgToPng } from "./testutils.js";
@@ -18,10 +18,14 @@ const defaultDancer = {
   rotate: 0,
 };
 
-async function drawDancers(dancers: PartialDancer[]) {
+async function drawDancers(
+  dancers: PartialDancer[],
+  options: PartialOptions = {}
+) {
   const renderer = new Renderer(
     makeOptions({
       body: { size: 100 },
+      ...options,
     }),
     SVG(makeSvg())
   );
@@ -56,5 +60,21 @@ test("render", async () => {
       { x: 2, y: 1, direction: "north", label: "6" },
       { x: 3, y: 1, direction: "north", label: "5" },
     ])
+  ).toMatchImageSnapshot();
+
+  expect(
+    await drawDancers(
+      [
+        { x: 0, y: 0, direction: "south" },
+        { x: 1, y: 0, direction: "north" },
+        { x: 2, y: 0, direction: "south" },
+        { x: 3, y: 0, direction: "north" },
+        { x: 4, y: 0, direction: "south" },
+        { x: 5, y: 0, direction: "north" },
+        { x: 6, y: 0, direction: "south" },
+        { x: 7, y: 0, direction: "north" },
+      ],
+      { space: { horizontal: 0.5 } }
+    )
   ).toMatchImageSnapshot();
 });

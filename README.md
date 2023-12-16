@@ -2,6 +2,9 @@
 
 render square dance formations as SVGs
 
+- **note:** "hexagon" geometry setting is a lie right now :(
+- also autodetect origin for geometry, assuming that flagpole center by default
+
 ```ts
 import { formationToSvg, Formation } from "sdsvg";
 
