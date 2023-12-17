@@ -1,49 +1,47 @@
 import { expect, expectTypeOf, test } from "vitest";
 
-import { makeOptions, Options } from "./options.js";
+import {
+  defaultOptions as defaults,
+  Options,
+  resolveOptions,
+} from "./options.js";
 
-const defaults = makeOptions({});
-
-test("makeOptions", () => {
-  expectTypeOf(defaults).toMatchTypeOf(Options);
+test("resolveOptions", () => {
+  expectTypeOf(defaults).toMatchTypeOf<Options>();
 
   expect(
-    makeOptions({
-      nose: { size: 2 },
+    resolveOptions({
+      nose: { size: `*2` },
     }).nose.size
   ).toEqual(defaults.nose.size * 2);
 
   expect(
-    makeOptions({
-      nose: { distance: 0.5 },
+    resolveOptions({
+      nose: { distance: `*0.5` },
     }).nose.distance
-  ).toEqual(defaults.nose.distance + defaults.nose.size * 0.5);
+  ).toEqual(defaults.nose.distance * 0.5);
 
   expect(
-    makeOptions({
-      space: { horizontal: 0.5 },
-    }).space.horizontal
-  ).toEqual(defaults.space.horizontal * 0.5);
+    resolveOptions({
+      layout: { horizontalGap: `*0.5` },
+    }).layout.horizontalGap
+  ).toEqual(defaults.layout.horizontalGap * 0.5);
 });
 
-test("makeOptions respects readonly", () => {
-  let options = {};
-  const result = makeOptions(options);
+test("resolveOptions respects readonly", () => {
+  let options = Object.freeze({});
+  let result = Object.freeze(resolveOptions(options));
 
-  expect(result).toEqual(defaults);
-  expect(makeOptions(options)).toEqual(defaults);
-  expect(result).toEqual(defaults);
-  expect(makeOptions(options)).toEqual(defaults);
-  expect(result).toEqual(defaults);
+  expect(resolveOptions(options)).toEqual(defaults);
+  expect(resolveOptions(options)).toEqual(defaults);
 
-  options = {
-    space: { horizontal: 0.5 },
-  };
+  options = Object.freeze({ layout: { horizontalGap: `*0.5` } });
+  result = Object.freeze(resolveOptions(options));
 
-  expect(makeOptions(options).space.horizontal).toEqual(
-    defaults.space.horizontal * 0.5
+  expect(resolveOptions(options).layout.horizontalGap).toEqual(
+    defaults.layout.horizontalGap * 0.5
   );
-  expect(makeOptions(options).space.horizontal).toEqual(
-    defaults.space.horizontal * 0.5
+  expect(resolveOptions(options).layout.horizontalGap).toEqual(
+    defaults.layout.horizontalGap * 0.5
   );
 });

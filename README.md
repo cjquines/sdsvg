@@ -3,7 +3,6 @@
 render square dance formations as SVGs
 
 - **note:** "hexagon" geometry setting is a lie right now :(
-- also autodetect origin for geometry, assuming that flagpole center by default
 
 ```ts
 import { formationToSvg, Formation } from "sdsvg";
@@ -11,15 +10,15 @@ import { formationToSvg, Formation } from "sdsvg";
 formationToSvg("1> 2> . . / . . 6< 5<");
 
 const formation = new Formation("e.e/nsns/w.w", {
-  body: { opacity: 0.2 },
-  nose: { size: 2 },
+  body: { fillOpacity: 0.2 },
+  nose: { size: `*2` },
 });
 formation.toElement(document.getElementById("#svg"));
 
 formationToSvg(
   [
     { x: 0, y: 0, direction: "north", label: "A", color: "blue" },
-    { x: 1, y: 0, direction: ["north", "south"], label: "B", dashed: true },
+    { x: 1, y: 0, direction: ["north", "south"], label: "B", phantom: true },
   ],
   { layout: { geometry: "hexagon", origin: { x: 0.5, y: 1.5 } } },
 );

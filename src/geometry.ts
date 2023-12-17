@@ -1,4 +1,4 @@
-import { Dancer } from "./dancer.js";
+import { DancerResolved as Dancer } from "./dancer.js";
 import { Enumify } from "./utils.js";
 
 export const Geometry = {
@@ -55,7 +55,11 @@ export class Point {
     }
   };
 
-  with = (dancer: Dancer): Dancer => ({ ...dancer, x: this.x, y: this.y });
+  with = (dancer: Dancer): Dancer => ({
+    ...dancer,
+    x: this.x,
+    y: this.y,
+  });
   static from = ({ x, y }: { x: number; y: number }) => new Point(x, y);
 }
 

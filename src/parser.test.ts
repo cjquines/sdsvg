@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 
-import { defaultAttrs, getX, parse, parseRow } from "./parser.js";
+import { getX, parse, parseRow } from "./parser.js";
 
 test("parseRow", () => {
   expect(parseRow("")).toEqual([]);
@@ -21,9 +21,15 @@ test("parseRow", () => {
 
   expect(parseRow("r@ pyx. p3bon dp*")).toEqual([
     { color: "red", direction: [] },
-    { color: "yellow", dashed: true, direction: [], label: "x", shape: "none" },
-    { color: "blue", dashed: true, direction: "north", label: "o" },
-    { dashed: true, direction: [] },
+    {
+      color: "yellow",
+      direction: [],
+      label: "x",
+      phantom: true,
+      shape: "none",
+    },
+    { color: "blue", direction: "north", label: "o", phantom: true },
+    { direction: [], phantom: true },
   ]);
 });
 
@@ -41,31 +47,29 @@ test("getX", () => {
 test("parse", () => {
   expect(parse("")).toEqual([]);
 
-  expect(parse(".")).toEqual([
-    { ...defaultAttrs, direction: [], shape: "none", x: 0, y: 0 },
-  ]);
+  expect(parse(".")).toEqual([{ direction: [], shape: "none", x: 0, y: 0 }]);
 
   expect(parse("e.e/nsns/w.w")).toEqual([
-    { ...defaultAttrs, direction: "east", x: -1, y: 0 },
-    { ...defaultAttrs, direction: [], shape: "none", x: 0, y: 0 },
-    { ...defaultAttrs, direction: "east", x: 1, y: 0 },
-    { ...defaultAttrs, direction: "north", x: -1.5, y: 1 },
-    { ...defaultAttrs, direction: "south", x: -0.5, y: 1 },
-    { ...defaultAttrs, direction: "north", x: 0.5, y: 1 },
-    { ...defaultAttrs, direction: "south", x: 1.5, y: 1 },
-    { ...defaultAttrs, direction: "west", x: -1, y: 2 },
-    { ...defaultAttrs, direction: [], shape: "none", x: 0, y: 2 },
-    { ...defaultAttrs, direction: "west", x: 1, y: 2 },
+    { direction: "east", x: -1, y: 0 },
+    { direction: [], shape: "none", x: 0, y: 0 },
+    { direction: "east", x: 1, y: 0 },
+    { direction: "north", x: -1.5, y: 1 },
+    { direction: "south", x: -0.5, y: 1 },
+    { direction: "north", x: 0.5, y: 1 },
+    { direction: "south", x: 1.5, y: 1 },
+    { direction: "west", x: -1, y: 2 },
+    { direction: [], shape: "none", x: 0, y: 2 },
+    { direction: "west", x: 1, y: 2 },
   ]);
 
   expect(parse("1> 2> . . / . . 6< 5<")).toEqual([
-    { ...defaultAttrs, direction: "east", label: "1", x: -1.5, y: 0 },
-    { ...defaultAttrs, direction: "east", label: "2", x: -0.5, y: 0 },
-    { ...defaultAttrs, direction: [], shape: "none", x: 0.5, y: 0 },
-    { ...defaultAttrs, direction: [], shape: "none", x: 1.5, y: 0 },
-    { ...defaultAttrs, direction: [], shape: "none", x: -1.5, y: 1 },
-    { ...defaultAttrs, direction: [], shape: "none", x: -0.5, y: 1 },
-    { ...defaultAttrs, direction: "west", label: "6", x: 0.5, y: 1 },
-    { ...defaultAttrs, direction: "west", label: "5", x: 1.5, y: 1 },
+    { direction: "east", label: "1", x: -1.5, y: 0 },
+    { direction: "east", label: "2", x: -0.5, y: 0 },
+    { direction: [], shape: "none", x: 0.5, y: 0 },
+    { direction: [], shape: "none", x: 1.5, y: 0 },
+    { direction: [], shape: "none", x: -1.5, y: 1 },
+    { direction: [], shape: "none", x: -0.5, y: 1 },
+    { direction: "west", label: "6", x: 0.5, y: 1 },
+    { direction: "west", label: "5", x: 1.5, y: 1 },
   ]);
 });

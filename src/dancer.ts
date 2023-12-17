@@ -1,6 +1,6 @@
 import ColorJS from "colorjs.io";
 
-import { Enumify } from "./utils.js";
+import { Enumify, Simplify } from "./utils.js";
 
 export const Direction = {
   North: "north",
@@ -29,13 +29,11 @@ const COLOR_TO_HEX: { [color in Color]: string } = {
   [Color.Yellow]: "#d69e2e",
 };
 
-export const toHex = (rawColor: Color | string, opacity: number): string => {
-  const color = new ColorJS(
+export function toHex(rawColor: Color | string): string {
+  return new ColorJS(
     rawColor in COLOR_TO_HEX ? COLOR_TO_HEX[rawColor as Color] : rawColor
-  );
-  color.alpha = opacity;
-  return color.toString({ format: "hex" });
-};
+  ).toString({ format: "hex" });
+}
 
 export const Shape = {
   None: "none",
@@ -45,16 +43,71 @@ export const Shape = {
 
 export type Shape = Enumify<typeof Shape>;
 
-export type Attributes = {
-  direction: Direction | Direction[];
-  label: string;
-  dashed: boolean;
-  rotate: number;
+export type Dancer = {
+  /**
+   * The dancer's horizontal coordinate, increasing from west to east. Units
+   * are matrix spots.
+   */
+  x: number;
+  /**
+   * The dancer's vertical coordinate, increasing from north to south. Units
+   * are matrix spots.
+   */
+  y: number;
+  /**
+   * The (possibly empty) list of directions of the dancer's nose.
+   * Default: []
+   */
+  direction?: Direction | Direction[];
+  /**
+   * The dancer's label.
+   * Default: ""
+   */
+  label?: string;
+  /**
+   * Whether the dancer is a phantom, and should be drawn with a dashed border.
+   * Default: false
+   */
+  phantom?: boolean;
+  /**
+   * How much to rotate this dancer clockwise, in degrees. This does not rotate
+   * the dancer's label.
+   * Default: 0
+   */
+  rotate?: number;
+  /**
+   * Overrides the color used to draw the dancer's body and nose.
+   */
   color?: Color | string;
+  /**
+   * Overrides the shape used to draw the dancer's body.
+   */
   shape?: Shape;
 };
 
-export type Dancer = Attributes & {
-  x: number;
-  y: number;
-};
+export function defineDancers(dancers: Dancer[]): Dancer[] {
+  return dancers;
+}
+
+export type DancerResolved = Simplify<
+  Required<Omit<Dancer, "color" | "shape">> &
+    Pick<Dancer, "color" | "shape"> & {
+      direction: Direction[];
+    }
+>;
+
+export function resolveDancer(dancer: Dancer): DancerResolved {
+  const r = { ...dancer };
+  r.direction = Array.isArray(r.direction)
+    ? r.direction
+    : r.direction
+    ? [r.direction]
+    : [];
+  r.label ??= "";
+  r.phantom ??= false;
+  r.rotate ??= 0;
+  if (r.color) {
+    r.color = toHex(r.color);
+  }
+  return r as DancerResolved;
+}

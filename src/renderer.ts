@@ -1,53 +1,53 @@
 import * as SVG from "@svgdotjs/svg.js";
 
-import { Dancer, Direction, Shape, toHex } from "./dancer.js";
-import { Options, makeOptions } from "./options.js";
+import { DancerResolved, Direction, Shape } from "./dancer.js";
+import { OptionsResolved, defaultOptions } from "./options.js";
 
 export class Renderer {
-  options: Options;
+  options: OptionsResolved;
   draw: SVG.Svg;
 
-  constructor(options?: Options, draw?: SVG.Svg) {
-    this.options = options ?? makeOptions({});
+  constructor(options?: OptionsResolved, draw?: SVG.Svg) {
+    this.options = options ?? defaultOptions;
     this.draw = draw ?? SVG.SVG();
   }
 
-  getCenter(dancer: Dancer): { x: number; y: number } {
+  getCenter(dancer: DancerResolved): { x: number; y: number } {
     const { x, y } = dancer;
-    const { body, space } = this.options;
+    const { body, layout } = this.options;
 
     return {
-      x: x * (body.size + space.horizontal),
-      y: y * (body.size + space.vertical),
+      x: x * (body.size + layout.horizontalGap),
+      y: y * (body.size + layout.verticalGap),
     };
   }
 
-  getBody(dancer: Dancer): SVG.Shape | undefined {
-    const { shape = this.options.body.shape } = dancer;
-    const {
-      body: { size },
-    } = this.options;
+  createShape(shape: Shape): SVG.Shape | undefined {
     if (shape === Shape.None) {
       return undefined;
     }
-
-    const body = (
+    return (
       shape === Shape.Square ? this.draw.rect() : this.draw.circle()
     ).remove();
-    const { x, y } = this.getCenter(dancer);
-    body.size(size, size).center(x, y);
-
-    return body;
   }
 
-  getNose(dancer: Dancer, direction: Direction): SVG.Shape | undefined {
+  getBody(dancer: DancerResolved): SVG.Shape | undefined {
     const {
-      nose: { distance, size },
+      body: { shape, size },
+    } = this.options;
+    const { x, y } = this.getCenter(dancer);
+    return this.createShape(dancer.shape ?? shape)
+      ?.size(size, size)
+      .center(x, y);
+  }
+
+  getNose(dancer: DancerResolved, direction: Direction): SVG.Shape | undefined {
+    const {
+      body: { size: bodySize },
+      nose: { distance, shape, size },
     } = this.options;
     const body = this.getBody(dancer);
-    if (!body) {
-      return undefined;
-    }
+    if (!body) return undefined;
 
     const [mulX, mulY] = (() => {
       switch (direction) {
@@ -63,10 +63,13 @@ export class Renderer {
     })();
 
     const { x, y } = this.getCenter(dancer);
-    const noseX = x + mulX * distance;
-    const noseY = y + mulY * distance;
-    const nose = this.draw.circle().remove();
-    nose.size(size, size).center(noseX, noseY);
+    const nose = this.createShape(shape)
+      ?.size(size, size)
+      .center(
+        x + mulX * (bodySize / 2 + distance),
+        y + mulY * (bodySize / 2 + distance)
+      );
+    if (!nose) return undefined;
 
     const mask = this.draw.mask();
     mask.add(nose.clone().fill("#fff")).add(body.fill("#000"));
@@ -75,28 +78,37 @@ export class Renderer {
     return nose;
   }
 
-  drawDancer(dancer: Dancer) {
-    const { color, dashed, direction, label: labelText, rotate } = dancer;
-    const { body, nose, label, stroke } = this.options;
+  drawDancer(dancer: DancerResolved) {
+    const { color, direction, label: labelText, phantom, rotate } = dancer;
+    const { body, nose, label } = this.options;
     const { x, y } = this.getCenter(dancer);
 
     const group = this.draw.group();
 
     // body
     this.getBody(dancer)
-      ?.fill({ color: toHex(color ?? body.color, body.opacity) })
+      ?.fill({
+        color: color ?? body.fillColor,
+        opacity: body.fillOpacity,
+      })
       .stroke({
-        color: toHex(color ?? body.color, 1),
-        width: stroke.width,
-        dasharray: dashed ? stroke.phantomDashArray.join(",") : undefined,
+        color: color ?? body.strokeColor,
+        width: body.strokeWidth,
+        dasharray: phantom ? body.phantomDashArray.join(",") : undefined,
       })
       .putIn(group);
 
     // noses
     (Array.isArray(direction) ? direction : [direction]).forEach((direction) =>
       this.getNose(dancer, direction)
-        ?.fill({ color: toHex(color ?? nose.color, nose.opacity) })
-        .stroke({ color: toHex(color ?? nose.color, 1), width: stroke.width })
+        ?.fill({
+          color: color ?? nose.fillColor,
+          opacity: nose.fillOpacity,
+        })
+        .stroke({
+          color: color ?? nose.strokeColor,
+          width: nose.strokeWidth,
+        })
         .putIn(group)
     );
 
@@ -105,7 +117,10 @@ export class Renderer {
     // label
     this.draw
       .text(labelText)
-      .fill({ color: toHex(color ?? label.color, label.opacity) })
+      .fill({
+        color: color ?? label.color,
+        opacity: label.opacity,
+      })
       .font("family", label.family)
       .font("size", label.size)
       .center(x, y);
@@ -115,7 +130,7 @@ export class Renderer {
 
   resizeImage() {
     const {
-      space: { padding: p },
+      layout: { padding: p },
     } = this.options;
 
     const { x, y, w, h } = this.draw.bbox();

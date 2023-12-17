@@ -1,4 +1,4 @@
-import { SVG, Svg, registerWindow } from "@svgdotjs/svg.js";
+import { registerWindow } from "@svgdotjs/svg.js";
 import { Buffer } from "node:buffer";
 import sharp from "sharp";
 import { createSVGWindow } from "svgdom";

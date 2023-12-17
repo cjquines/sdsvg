@@ -2,36 +2,22 @@ import { SVG } from "@svgdotjs/svg.js";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { expect, test } from "vitest";
 
-import { PartialOptions, makeOptions } from "./options.js";
-import { PartialDancer } from "./parser.js";
+import { Dancer, resolveDancer } from "./dancer.js";
+import { Options, resolveOptions } from "./options.js";
 import { Renderer } from "./renderer.js";
 import { makeSvg, svgToPng } from "./testutils.js";
 
 expect.extend({ toMatchImageSnapshot });
 
-const defaultDancer = {
-  x: 0,
-  y: 0,
-  direction: [],
-  label: "",
-  dashed: false,
-  rotate: 0,
-};
-
-async function drawDancers(
-  dancers: PartialDancer[],
-  options: PartialOptions = {}
-) {
+async function drawDancers(dancers: Dancer[], options: Options = {}) {
   const renderer = new Renderer(
-    makeOptions({
+    resolveOptions({
       body: { size: 100 },
       ...options,
     }),
     SVG(makeSvg())
   );
-  dancers.forEach((dancer) =>
-    renderer.drawDancer({ ...defaultDancer, ...dancer })
-  );
+  dancers.forEach((dancer) => renderer.drawDancer(resolveDancer(dancer)));
   renderer.resizeImage();
   return svgToPng(renderer.draw.svg());
 }
@@ -65,16 +51,16 @@ test("render", async () => {
   expect(
     await drawDancers(
       [
-        { x: 0, y: 0, direction: "south" },
-        { x: 1, y: 0, direction: "north" },
-        { x: 2, y: 0, direction: "south" },
-        { x: 3, y: 0, direction: "north" },
-        { x: 4, y: 0, direction: "south" },
-        { x: 5, y: 0, direction: "north" },
-        { x: 6, y: 0, direction: "south" },
-        { x: 7, y: 0, direction: "north" },
+        { x: 0, y: 0, direction: "south", label: "1" },
+        { x: 1, y: 0, direction: "south", label: "2" },
+        { x: 2, y: 0, direction: "south", label: "3" },
+        { x: 3, y: 0, direction: "south", label: "4" },
+        { x: 0, y: 1, direction: "north", label: "8" },
+        { x: 1, y: 1, direction: "north", label: "7" },
+        { x: 2, y: 1, direction: "north", label: "6" },
+        { x: 3, y: 1, direction: "north", label: "5" },
       ],
-      { space: { horizontal: 0.5 } }
+      { layout: { horizontalGap: `*2` } }
     )
   ).toMatchImageSnapshot();
 });

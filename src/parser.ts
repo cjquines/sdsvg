@@ -1,6 +1,13 @@
-import { Attributes, Color, Dancer, Direction, Shape } from "./dancer.js";
+import { Color, Dancer, Direction, Shape } from "./dancer.js";
+import { Simplify } from "./utils.js";
 
-const SYMBOLS: { [key: string]: Partial<Attributes> } = {
+type Attributes = Omit<Dancer, "x" | "y">;
+
+type AttributesWithDirection = Simplify<
+  Attributes & Required<Pick<Attributes, "direction">>
+>;
+
+const SYMBOLS: { [key: string]: Attributes } = {
   "^": { direction: Direction.North },
   ">": { direction: Direction.East },
   v: { direction: Direction.South },
@@ -34,19 +41,17 @@ const SYMBOLS: { [key: string]: Partial<Attributes> } = {
   b: { color: Color.Blue },
   g: { color: Color.Green },
   y: { color: Color.Yellow },
-  p: { dashed: true },
+  p: { phantom: true },
   O: { shape: Shape.Circle },
 };
 
-type AttrWithDirection = Partial<Attributes> & Pick<Attributes, "direction">;
-
-export function parseRow(row: string): AttrWithDirection[] {
-  const result: AttrWithDirection[] = [];
-  let partial: Partial<Attributes> = {};
+export function parseRow(row: string): AttributesWithDirection[] {
+  const result: AttributesWithDirection[] = [];
+  let partial: Attributes = {};
 
   const pushIfDone = () => {
     if (partial.direction) {
-      result.push(partial as AttrWithDirection);
+      result.push(partial as AttributesWithDirection);
       partial = {};
     }
   };
@@ -67,29 +72,15 @@ export function getX(i: number, length: number): number {
   return i + 0.5 - length / 2;
 }
 
-export const defaultAttrs: Omit<Attributes, "direction"> = {
-  label: "",
-  dashed: false,
-  rotate: 0,
-};
-
-export type PartialDancer = AttrWithDirection & { x: number; y: number };
-
-export function dancerify(dancer: PartialDancer): Dancer {
-  return { ...defaultAttrs, ...dancer };
-}
-
 export function parse(spec: string): Dancer[] {
   return spec
     .split(/\n|\//)
     .map(parseRow)
     .flatMap((row, y) =>
-      row.map((attrs, i) =>
-        dancerify({
-          ...attrs,
-          x: getX(i, row.length),
-          y,
-        })
-      )
+      row.map((attrs, i) => ({
+        ...attrs,
+        x: getX(i, row.length),
+        y,
+      }))
     );
 }

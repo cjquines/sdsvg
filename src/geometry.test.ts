@@ -1,11 +1,14 @@
 import { expect, test } from "vitest";
 
 import { Geometry, geometrize } from "./geometry.js";
-import { Dancer } from "./dancer.js";
+import { DancerResolved as Dancer } from "./dancer.js";
 
 test("rotate", () => {
   expect(
-    geometrize({ x: 0, y: 0 } as Dancer, Geometry.Hexagon, { x: 0, y: 1 })
+    geometrize({ x: 0, y: 0 } as Dancer, Geometry.Hexagon, {
+      x: 0,
+      y: 1,
+    })
   ).toEqual([
     { rotate: 0, x: 0, y: 0 },
     {

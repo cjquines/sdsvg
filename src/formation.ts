@@ -1,24 +1,29 @@
 import { SVG } from "@svgdotjs/svg.js";
 
-import { Dancer } from "./dancer.js";
+import { Dancer, DancerResolved, resolveDancer } from "./dancer.js";
 import { geometrize } from "./geometry.js";
-import { Options, PartialOptions, makeOptions } from "./options.js";
-import { PartialDancer, dancerify, parse } from "./parser.js";
+import {
+  Options,
+  OptionsResolved,
+  defaultOptions,
+  resolveOptions,
+} from "./options.js";
+import { parse } from "./parser.js";
 import { Renderer } from "./renderer.js";
 
 export class Formation {
-  dancers: Dancer[];
-  options: Options;
+  dancers: DancerResolved[];
+  options: OptionsResolved;
 
-  constructor(input: string | PartialDancer[], options?: PartialOptions) {
-    this.options = makeOptions(options ?? {});
+  constructor(input: string | Dancer[], options?: Options) {
+    this.options = options ? resolveOptions(options) : defaultOptions;
     const {
       layout: { geometry, origin },
     } = this.options;
 
     const dancers = typeof input === "string" ? parse(input) : input;
     this.dancers = dancers.flatMap((dancer) =>
-      geometrize(dancerify(dancer), geometry, origin)
+      geometrize(resolveDancer(dancer), geometry, origin)
     );
   }
 
@@ -39,8 +44,8 @@ export class Formation {
 }
 
 export function formationToSvg(
-  input: string | PartialDancer[],
-  options?: PartialOptions
+  input: string | Dancer[],
+  options?: Options
 ): string {
   return new Formation(input, options).toString();
 }
