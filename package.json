@@ -1,6 +1,6 @@
 {
   "name": "sdsvg",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "render square dance formations as svgs",
   "license": "MIT",
   "author": "CJ Quines <cj@cjquines.com>",
