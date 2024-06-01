@@ -1,4 +1,4 @@
-import { SVG } from "@svgdotjs/svg.js";
+import { SVG, registerWindow } from "@svgdotjs/svg.js";
 
 import { Dancer, DancerResolved, resolveDancer } from "./dancer.js";
 import { geometrize } from "./geometry.js";
@@ -23,7 +23,7 @@ export class Formation {
 
     const dancers = typeof input === "string" ? parse(input) : input;
     this.dancers = dancers.flatMap((dancer) =>
-      geometrize(resolveDancer(dancer), geometry, origin)
+      geometrize(resolveDancer(dancer), geometry, origin),
     );
   }
 
@@ -41,11 +41,20 @@ export class Formation {
     this.drawDancers(render);
     return render.draw.svg();
   }
+
+  async toStringAsync(): Promise<string> {
+    // only works if svgdom is installed as a peer dep
+    const { createSVGWindow } = await import("svgdom");
+    const window = createSVGWindow();
+    const document = window.document;
+    registerWindow(window, document);
+    return this.toString(document.documentElement);
+  }
 }
 
 export function formationToSvg(
   input: string | Dancer[],
-  options?: Options
+  options?: Options,
 ): string {
   return new Formation(input, options).toString();
 }

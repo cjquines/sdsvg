@@ -25,6 +25,9 @@
     "@svgdotjs/svg.js": "^3.2.0",
     "colorjs.io": "^0.4.5"
   },
+  "peerDependencies": {
+    "svgdom": "^0.1.19"
+  },
   "devDependencies": {
     "@types/jest-image-snapshot": "^6.3.0",
     "@types/svgdom": "^0.1.2",
