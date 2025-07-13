@@ -81,6 +81,6 @@ export function parse(spec: string): Dancer[] {
         ...attrs,
         x: getX(i, row.length),
         y,
-      }))
+      })),
     );
 }

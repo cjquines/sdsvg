@@ -6,22 +6,24 @@ test("resolveDancer", () => {
     resolveDancer({
       x: 0,
       y: 0,
-    })
+    }),
   ).toMatchTypeOf<DancerResolved>();
 
   expect(
     resolveDancer({
       x: 0,
       y: 0,
-    })
-  ).toMatchInlineSnapshot({
-    direction: [],
-    label: "",
-    phantom: false,
-    rotate: 0,
-    x: 0,
-    y: 0,
-  }, `
+    }),
+  ).toMatchInlineSnapshot(
+    {
+      direction: [],
+      label: "",
+      phantom: false,
+      rotate: 0,
+      x: 0,
+      y: 0,
+    },
+    `
     {
       "direction": [],
       "label": "",
@@ -30,5 +32,6 @@ test("resolveDancer", () => {
       "x": 0,
       "y": 0,
     }
-  `);
+  `,
+  );
 });

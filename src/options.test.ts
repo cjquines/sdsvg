@@ -12,19 +12,19 @@ test("resolveOptions", () => {
   expect(
     resolveOptions({
       nose: { size: `*2` },
-    }).nose.size
+    }).nose.size,
   ).toEqual(defaults.nose.size * 2);
 
   expect(
     resolveOptions({
       nose: { distance: `*0.5` },
-    }).nose.distance
+    }).nose.distance,
   ).toEqual(defaults.nose.distance * 0.5);
 
   expect(
     resolveOptions({
       layout: { horizontalGap: `*0.5` },
-    }).layout.horizontalGap
+    }).layout.horizontalGap,
   ).toEqual(defaults.layout.horizontalGap * 0.5);
 });
 
@@ -39,9 +39,9 @@ test("resolveOptions respects readonly", () => {
   result = Object.freeze(resolveOptions(options));
 
   expect(resolveOptions(options).layout.horizontalGap).toEqual(
-    defaults.layout.horizontalGap * 0.5
+    defaults.layout.horizontalGap * 0.5,
   );
   expect(resolveOptions(options).layout.horizontalGap).toEqual(
-    defaults.layout.horizontalGap * 0.5
+    defaults.layout.horizontalGap * 0.5,
   );
 });

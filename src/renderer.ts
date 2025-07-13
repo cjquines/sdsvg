@@ -3,24 +3,12 @@ import * as SVG from "@svgdotjs/svg.js";
 import { DancerResolved, Direction, Shape } from "./dancer.js";
 import { OptionsResolved, defaultOptions } from "./options.js";
 
-export class Renderer {
-  options: OptionsResolved;
-  draw: SVG.Svg;
-
-  constructor(options?: OptionsResolved, draw?: SVG.Svg) {
-    this.options = options ?? defaultOptions;
-    this.draw = draw ?? SVG.SVG();
-  }
-
-  getCenter(dancer: DancerResolved): { x: number; y: number } {
-    const { x, y } = dancer;
-    const { body, layout } = this.options;
-
-    return {
-      x: x * (body.size + layout.horizontalGap),
-      y: y * (body.size + layout.verticalGap),
-    };
-  }
+class DancerRenderer {
+  constructor(
+    public dancer: DancerResolved,
+    public options: OptionsResolved,
+    public draw: SVG.Svg,
+  ) {}
 
   createShape(shape: Shape): SVG.Shape | undefined {
     if (shape === Shape.None) {
@@ -31,23 +19,68 @@ export class Renderer {
     ).remove();
   }
 
-  getBody(dancer: DancerResolved): SVG.Shape | undefined {
+  #center: { x: number; y: number } | undefined;
+  get center(): { x: number; y: number } {
+    if (this.#center) return this.#center;
+
+    const { x, y } = this.dancer;
+    const { body, layout } = this.options;
+
+    this.#center = {
+      x: x * (body.size + layout.horizontalGap),
+      y: y * (body.size + layout.verticalGap),
+    };
+    return this.#center;
+  }
+
+  #body: SVG.Shape | undefined;
+  get body(): SVG.Shape | undefined {
+    if (this.#body) return this.#body;
+
     const {
       body: { shape, size },
     } = this.options;
-    const { x, y } = this.getCenter(dancer);
-    return this.createShape(dancer.shape ?? shape)
+    const { x, y } = this.center;
+
+    this.#body = this.createShape(this.dancer.shape ?? shape)
       ?.size(size, size)
       .center(x, y);
+    return this.#body;
   }
 
-  getNose(dancer: DancerResolved, direction: Direction): SVG.Shape | undefined {
+  #baseNose: SVG.Shape | undefined;
+  get baseNose(): SVG.Shape | undefined {
+    if (this.#baseNose) return this.#baseNose;
+
+    const {
+      nose: { shape, size },
+    } = this.options;
+
+    this.#baseNose = this.createShape(shape)?.size(size, size);
+    return this.#baseNose;
+  }
+
+  #noseMask: SVG.Mask | undefined;
+  get noseMask() {
+    if (this.#noseMask) return this.#noseMask;
+    if (!this.body) return undefined;
+
+    const mask = this.draw.mask();
+    this.#noseMask = mask;
+    return mask;
+  }
+
+  finalizeNoseMask() {
+    this.noseMask?.add(this.body!.fill("#000"));
+  }
+
+  nose(direction: Direction) {
+    if (!this.baseNose || !this.noseMask) return undefined;
+
     const {
       body: { size: bodySize },
-      nose: { distance, shape, size },
+      nose: { distance },
     } = this.options;
-    const body = this.getBody(dancer);
-    if (!body) return undefined;
 
     const [mulX, mulY] = (() => {
       switch (direction) {
@@ -62,31 +95,30 @@ export class Renderer {
       }
     })();
 
-    const { x, y } = this.getCenter(dancer);
-    const nose = this.createShape(shape)
-      ?.size(size, size)
+    const { x, y } = this.center;
+    const nose = this.baseNose
+      .clone()
       .center(
         x + mulX * (bodySize / 2 + distance),
-        y + mulY * (bodySize / 2 + distance)
+        y + mulY * (bodySize / 2 + distance),
       );
-    if (!nose) return undefined;
 
-    const mask = this.draw.mask();
-    mask.add(nose.clone().fill("#fff")).add(body.fill("#000"));
-    nose.maskWith(mask);
+    this.noseMask.add(nose.clone().fill("#fff"));
+    nose.maskWith(this.noseMask);
 
     return nose;
   }
 
-  drawDancer(dancer: DancerResolved) {
-    const { color, direction, label: labelText, phantom, rotate } = dancer;
+  drawDancer() {
+    const { color, direction, label: labelText, phantom, rotate } = this.dancer;
     const { body, nose, label } = this.options;
-    const { x, y } = this.getCenter(dancer);
+    const { x, y } = this.center;
 
     const group = this.draw.group();
 
     // body
-    this.getBody(dancer)
+    this.body
+      ?.clone()
       ?.fill({
         color: color ?? body.fillColor,
         opacity: body.fillOpacity,
@@ -99,8 +131,8 @@ export class Renderer {
       .putIn(group);
 
     // noses
-    (Array.isArray(direction) ? direction : [direction]).forEach((direction) =>
-      this.getNose(dancer, direction)
+    direction.forEach((direction) =>
+      this.nose(direction)
         ?.fill({
           color: color ?? nose.fillColor,
           opacity: nose.fillOpacity,
@@ -109,8 +141,10 @@ export class Renderer {
           color: color ?? nose.strokeColor,
           width: nose.strokeWidth,
         })
-        .putIn(group)
+        .putIn(group),
     );
+
+    this.finalizeNoseMask();
 
     group.rotate(rotate, x, y);
 
@@ -126,6 +160,21 @@ export class Renderer {
       .center(x, y);
 
     group.putIn(this.draw);
+  }
+}
+
+export class Renderer {
+  options: OptionsResolved;
+  draw: SVG.Svg;
+
+  constructor(options?: OptionsResolved, draw?: SVG.Svg) {
+    this.options = options ?? defaultOptions;
+    this.draw = draw ?? SVG.SVG();
+  }
+
+  drawDancer(dancer: DancerResolved) {
+    const renderer = new DancerRenderer(dancer, this.options, this.draw);
+    renderer.drawDancer();
   }
 
   resizeImage() {

@@ -31,7 +31,7 @@ const COLOR_TO_HEX: { [color in Color]: string } = {
 
 export function toHex(rawColor: Color | string): string {
   return new ColorJS(
-    rawColor in COLOR_TO_HEX ? COLOR_TO_HEX[rawColor as Color] : rawColor
+    rawColor in COLOR_TO_HEX ? COLOR_TO_HEX[rawColor as Color] : rawColor,
   ).toString({ format: "hex" });
 }
 
@@ -90,7 +90,7 @@ export function defineDancers(dancers: Dancer[]): Dancer[] {
 }
 
 export type DancerResolved = Simplify<
-  Required<Omit<Dancer, "color" | "shape">> &
+  Required<Omit<Dancer, "color" | "shape" | "direction">> &
     Pick<Dancer, "color" | "shape"> & {
       direction: Direction[];
     }
@@ -101,8 +101,8 @@ export function resolveDancer(dancer: Dancer): DancerResolved {
   r.direction = Array.isArray(r.direction)
     ? r.direction
     : r.direction
-    ? [r.direction]
-    : [];
+      ? [r.direction]
+      : [];
   r.label ??= "";
   r.phantom ??= false;
   r.rotate ??= 0;

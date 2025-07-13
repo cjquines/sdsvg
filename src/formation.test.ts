@@ -20,7 +20,7 @@ test("render", async () => {
     await toPng("e.e/nsns/w.w", {
       body: { fillOpacity: 0.2 },
       nose: { size: `*2` },
-    })
+    }),
   ).toMatchImageSnapshot({ customSnapshotIdentifier: "sample2" });
 
   expect(
@@ -35,7 +35,7 @@ test("render", async () => {
           phantom: true,
         },
       ],
-      { layout: { geometry: "hexagon", origin: { x: 0.5, y: -1.5 } } }
-    )
+      { layout: { geometry: "hexagon", origin: { x: 0.5, y: -1.5 } } },
+    ),
   ).toMatchImageSnapshot({ customSnapshotIdentifier: "sample3" });
 });

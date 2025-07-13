@@ -231,7 +231,7 @@ export function resolveOptions(options: Readonly<Options>): OptionsResolved {
   r.body.strokeColor = toHex(r.body.strokeColor ?? Color.Black);
   r.body.strokeWidth = sized(Math.max(1, r.body.size / 12), r.body.strokeWidth);
   r.body.phantomDashArray = (r.body.phantomDashArray ?? [r.body.size / 5]).map(
-    (value) => sized((r.body!.size as number) / 5, value)
+    (value) => sized((r.body!.size as number) / 5, value),
   );
   r.body.fillColor = toHex(r.body.fillColor ?? r.body.strokeColor);
   r.body.fillOpacity ??= 0;
@@ -254,12 +254,12 @@ export function resolveOptions(options: Readonly<Options>): OptionsResolved {
   r.layout.horizontalGap = sized(
     r.layout.space,
     r.layout.horizontalGap ??
-      (Array.isArray(r.layout.gap) ? r.layout.gap[0] : r.layout.gap)
+      (Array.isArray(r.layout.gap) ? r.layout.gap[0] : r.layout.gap),
   );
   r.layout.verticalGap = sized(
     r.layout.space,
     r.layout.verticalGap ??
-      (Array.isArray(r.layout.gap) ? r.layout.gap[1] : r.layout.gap)
+      (Array.isArray(r.layout.gap) ? r.layout.gap[1] : r.layout.gap),
   );
   r.layout.geometry ??= Geometry.None;
   r.layout.origin ??= { x: 0, y: 0 };

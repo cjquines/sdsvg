@@ -15,7 +15,7 @@ async function drawDancers(dancers: Dancer[], options: Options = {}) {
       body: { size: 100 },
       ...options,
     }),
-    SVG(makeSvg())
+    SVG(makeSvg()),
   );
   dancers.forEach((dancer) => renderer.drawDancer(resolveDancer(dancer)));
   renderer.resizeImage();
@@ -24,7 +24,7 @@ async function drawDancers(dancers: Dancer[], options: Options = {}) {
 
 test("render", async () => {
   expect(
-    await drawDancers([{ x: 0, y: 0, direction: "east" }])
+    await drawDancers([{ x: 0, y: 0, direction: "east" }]),
   ).toMatchImageSnapshot();
 
   expect(
@@ -32,7 +32,7 @@ test("render", async () => {
       { x: 0, y: 0, direction: ["north", "south"], shape: "circle" },
       { x: 1, y: 0, direction: [], label: "+", shape: "none" },
       { x: 2, y: 0, direction: "west", color: "red", label: "F", rotate: 120 },
-    ])
+    ]),
   ).toMatchImageSnapshot();
 
   expect(
@@ -45,7 +45,7 @@ test("render", async () => {
       { x: 1, y: 1, direction: "north", label: "7" },
       { x: 2, y: 1, direction: "north", label: "6" },
       { x: 3, y: 1, direction: "north", label: "5" },
-    ])
+    ]),
   ).toMatchImageSnapshot();
 
   expect(
@@ -60,7 +60,7 @@ test("render", async () => {
         { x: 2, y: 1, direction: "north", label: "6" },
         { x: 3, y: 1, direction: "north", label: "5" },
       ],
-      { layout: { horizontalGap: `*2` } }
-    )
+      { layout: { horizontalGap: `*2` } },
+    ),
   ).toMatchImageSnapshot();
 });

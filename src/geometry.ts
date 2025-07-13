@@ -11,7 +11,10 @@ export const Geometry = {
 export type Geometry = Enumify<typeof Geometry>;
 
 export class Point {
-  constructor(public x: number, public y: number) {}
+  constructor(
+    public x: number,
+    public y: number,
+  ) {}
 
   fn = (f: (x: number, y: number) => [number, number]) => {
     const [nx, ny] = f(this.x, this.y);
@@ -66,7 +69,7 @@ export class Point {
 export function geometrize(
   dancer: Dancer,
   geometry: Geometry,
-  origin: { x: number; y: number }
+  origin: { x: number; y: number },
 ): Dancer[] {
   const p = Point.from(dancer);
   const o = Point.from(origin);
