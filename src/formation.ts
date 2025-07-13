@@ -42,13 +42,10 @@ export class Formation {
     return render.draw.svg();
   }
 
-  async toStringAsync(): Promise<string> {
-    // only works if svgdom is installed as a peer dep
-    const { createSVGWindow } = await import("svgdom");
-    const window = createSVGWindow();
-    const document = window.document;
-    registerWindow(window, document);
-    return this.toString(document.documentElement);
+  registerWindow(win: Window, doc: Document): void {
+    if (typeof window === "undefined" || typeof document === "undefined") {
+      registerWindow(win, doc);
+    }
   }
 }
 
