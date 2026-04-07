@@ -9,12 +9,28 @@ import {
 import { parse } from "./parser.js";
 import { Renderer } from "./renderer.js";
 
+function hashInput(input: string | Dancer[]): string {
+  const str = typeof input === "string" ? input : JSON.stringify(input);
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  }
+  return (h >>> 0).toString(36);
+}
+
 export class Formation {
   dancers: DancerResolved[];
   options: OptionsResolved;
 
   constructor(input: string | Dancer[], options?: Options) {
-    this.options = options ? resolveOptions(options) : defaultOptions;
+    const opts: Options = {
+      ...options,
+      render: {
+        idPrefix: `${hashInput(input)}-`,
+        ...options?.render,
+      },
+    };
+    this.options = resolveOptions(opts);
     const {
       layout: { geometry, origin },
     } = this.options;

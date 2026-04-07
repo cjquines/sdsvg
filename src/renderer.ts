@@ -142,7 +142,7 @@ export class Renderer {
 
   constructor(options?: OptionsResolved) {
     this.options = options ?? defaultOptions;
-    this.doc = new SVG.Document();
+    this.doc = new SVG.Document(this.options.render.idPrefix);
   }
 
   drawDancer(dancer: DancerResolved) {

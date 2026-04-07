@@ -245,16 +245,17 @@ class Box {
   }
 }
 
-let globalMaskCounter = 0;
-
 export class Document {
   private root: Element;
   private defsEl: Element;
+  private maskCounter = 0;
+  private idPrefix: string;
 
-  constructor() {
+  constructor(idPrefix = "") {
     this.root = new Element("svg", { xmlns: "http://www.w3.org/2000/svg" });
     this.defsEl = new Element("defs");
     this.root.add(this.defsEl);
+    this.idPrefix = idPrefix;
   }
 
   add(child: Element): void {
@@ -262,7 +263,7 @@ export class Document {
   }
 
   createMask(): { id: string; element: Element } {
-    const id = `m${++globalMaskCounter}`;
+    const id = `${this.idPrefix}m${++this.maskCounter}`;
     const el = new Element("mask", { id });
     this.defsEl.add(el);
     return { id, element: el };

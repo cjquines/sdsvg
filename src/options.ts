@@ -178,6 +178,16 @@ type LayoutOptionsResolved = Simplify<
   }
 >;
 
+type RenderOptions = {
+  /**
+   * Prefix for generated element IDs (e.g. mask IDs). Use this to avoid ID
+   * collisions when rendering multiple formations on the same page.
+   */
+  idPrefix?: string;
+};
+
+type RenderOptionsResolved = Required<RenderOptions>;
+
 export type Options = {
   /** Options for drawing the dancer's bodies. */
   body?: BodyOptions;
@@ -187,6 +197,8 @@ export type Options = {
   label?: LabelOptions;
   /** Options for the dancers' layout. */
   layout?: LayoutOptions;
+  /** Options for SVG rendering. */
+  render?: RenderOptions;
 };
 
 export function defineOptions(options: Options): Options {
@@ -214,6 +226,7 @@ export type OptionsResolved = {
   nose: NoseOptionsResolved;
   label: LabelOptionsResolved;
   layout: LayoutOptionsResolved;
+  render: RenderOptionsResolved;
 };
 
 export function resolveOptions(options: Readonly<Options>): OptionsResolved {
@@ -264,7 +277,11 @@ export function resolveOptions(options: Readonly<Options>): OptionsResolved {
   r.layout.geometry ??= Geometry.None;
   r.layout.origin ??= { x: 0, y: 0 };
 
-  return r as OptionsResolved;
+  const render: RenderOptionsResolved = {
+    idPrefix: options.render?.idPrefix ?? "",
+  };
+
+  return { ...r, render } as OptionsResolved;
 }
 
 export const defaultOptions = Object.freeze(resolveOptions({}));
