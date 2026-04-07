@@ -1,86 +1,69 @@
-import * as SVG from "@svgdotjs/svg.js";
-
 import { DancerResolved, Direction, Shape } from "./dancer.js";
 import { OptionsResolved, defaultOptions } from "./options.js";
+import * as SVG from "./svg.js";
 
 class DancerRenderer {
+  private cx: number;
+  private cy: number;
+  private maskId: string | undefined;
+  private maskEl: SVG.Element | undefined;
+
   constructor(
     public dancer: DancerResolved,
     public options: OptionsResolved,
-    public draw: SVG.Svg,
-  ) {}
+    private doc: SVG.Document,
+  ) {
+    const { x, y } = dancer;
+    const { body, layout } = options;
+    this.cx = x * (body.size + layout.horizontalGap);
+    this.cy = y * (body.size + layout.verticalGap);
+  }
 
-  createShape(shape: Shape): SVG.Shape | undefined {
-    if (shape === Shape.None) {
-      return undefined;
+  private getMask() {
+    if (!this.maskEl) {
+      const mask = this.doc.createMask();
+      this.maskId = mask.id;
+      this.maskEl = mask.element;
     }
-    return (
-      shape === Shape.Square ? this.draw.rect() : this.draw.circle()
-    ).remove();
-  }
-
-  #center: { x: number; y: number } | undefined;
-  get center(): { x: number; y: number } {
-    if (this.#center) return this.#center;
-
-    const { x, y } = this.dancer;
-    const { body, layout } = this.options;
-
-    this.#center = {
-      x: x * (body.size + layout.horizontalGap),
-      y: y * (body.size + layout.verticalGap),
+    return {
+      id: this.maskId!,
+      element: this.maskEl!,
     };
-    return this.#center;
   }
 
-  #body: SVG.Shape | undefined;
-  get body(): SVG.Shape | undefined {
-    if (this.#body) return this.#body;
-
-    const {
-      body: { shape, size },
-    } = this.options;
-    const { x, y } = this.center;
-
-    this.#body = this.createShape(this.dancer.shape ?? shape)
-      ?.size(size, size)
-      .center(x, y);
-    return this.#body;
+  private body(): { element: SVG.Element | undefined; shape: Shape } {
+    const { color, phantom } = this.dancer;
+    const { body } = this.options;
+    const shape = this.dancer.shape ?? body.shape;
+    const element = SVG.Shape(shape, this.cx, this.cy, body.size)
+      ?.fill(color ?? body.fillColor, body.fillOpacity)
+      ?.stroke(
+        color ?? body.strokeColor,
+        body.strokeWidth,
+        phantom ? body.phantomDashArray.join(",") : undefined,
+      );
+    return { element, shape };
   }
 
-  #baseNose: SVG.Shape | undefined;
-  get baseNose(): SVG.Shape | undefined {
-    if (this.#baseNose) return this.#baseNose;
-
-    const {
-      nose: { shape, size },
-    } = this.options;
-
-    this.#baseNose = this.createShape(shape)?.size(size, size);
-    return this.#baseNose;
-  }
-
-  #noseMask: SVG.Mask | undefined;
-  get noseMask() {
-    if (this.#noseMask) return this.#noseMask;
-    if (!this.body) return undefined;
-
-    const mask = this.draw.mask();
-    this.#noseMask = mask;
-    return mask;
-  }
-
-  finalizeNoseMask() {
-    this.noseMask?.add(this.body!.fill("#000"));
-  }
-
-  nose(direction: Direction) {
-    if (!this.baseNose || !this.noseMask) return undefined;
-
+  private nose(
+    direction: Direction,
+    hasBody: boolean,
+  ): SVG.Element | undefined {
     const {
       body: { size: bodySize },
-      nose: { distance },
+      nose: {
+        shape,
+        size,
+        distance,
+        fillColor,
+        fillOpacity,
+        strokeColor,
+        strokeWidth,
+      },
     } = this.options;
+    const { color } = this.dancer;
+
+    if (shape === Shape.None) return undefined;
 
     const [mulX, mulY] = (() => {
       switch (direction) {
@@ -95,94 +78,91 @@ class DancerRenderer {
       }
     })();
 
-    const { x, y } = this.center;
-    const nose = this.baseNose
-      .clone()
-      .center(
-        x + mulX * (bodySize / 2 + distance),
-        y + mulY * (bodySize / 2 + distance),
-      );
+    const cx = this.cx + mulX * (bodySize / 2 + distance);
+    const cy = this.cy + mulY * (bodySize / 2 + distance);
 
-    this.noseMask.add(nose.clone().fill("#fff"));
-    nose.maskWith(this.noseMask);
+    const nose = SVG.Shape(shape, cx, cy, size)
+      ?.fill(color ?? fillColor, fillOpacity)
+      ?.stroke(color ?? strokeColor, strokeWidth);
+    if (!nose) return undefined;
+
+    if (hasBody) {
+      const mask = this.getMask();
+      mask.element.add(SVG.Shape(shape, cx, cy, size)?.fill("#fff"));
+      nose.attr("mask", `url(#${mask.id})`);
+    }
 
     return nose;
   }
 
-  drawDancer() {
-    const { color, direction, label: labelText, phantom, rotate } = this.dancer;
-    const { body, nose, label } = this.options;
-    const { x, y } = this.center;
+  private label(): SVG.Element {
+    const { color, label: labelText } = this.dancer;
+    const { label } = this.options;
+    return SVG.Text(labelText, {
+      x: this.cx,
+      y: this.cy,
+      dy: "0.35em",
+      "text-anchor": "middle",
+      "font-family": label.family,
+      "font-size": label.size,
+    }).fill(color ?? label.color, label.opacity);
+  }
 
-    const group = this.draw.group();
+  draw(): SVG.Element {
+    const { direction, rotate } = this.dancer;
+    const body = this.body();
 
-    // body
-    this.body
-      ?.clone()
-      ?.fill({
-        color: color ?? body.fillColor,
-        opacity: body.fillOpacity,
-      })
-      .stroke({
-        color: color ?? body.strokeColor,
-        width: body.strokeWidth,
-        dasharray: phantom ? body.phantomDashArray.join(",") : undefined,
-      })
-      .putIn(group);
+    const group = SVG.Group();
+    group.add(body.element);
 
-    // noses
-    direction.forEach((direction) =>
-      this.nose(direction)
-        ?.fill({
-          color: color ?? nose.fillColor,
-          opacity: nose.fillOpacity,
-        })
-        .stroke({
-          color: color ?? nose.strokeColor,
-          width: nose.strokeWidth,
-        })
-        .putIn(group),
-    );
+    for (const dir of direction) {
+      group.add(this.nose(dir, body.element !== undefined));
+    }
 
-    this.finalizeNoseMask();
+    // add black body on top to carve out the body area
+    if (this.maskEl && body.element !== undefined) {
+      this.maskEl.add(
+        SVG.Shape(body.shape, this.cx, this.cy, this.options.body.size)?.fill(
+          "#000",
+        ),
+      );
+    }
 
-    group.rotate(rotate, x, y);
+    if (rotate) {
+      group.attr("transform", `rotate(${rotate} ${this.cx} ${this.cy})`);
+    }
 
-    // label
-    this.draw
-      .text(labelText)
-      .fill({
-        color: color ?? label.color,
-        opacity: label.opacity,
-      })
-      .font("family", label.family)
-      .font("size", label.size)
-      .center(x, y);
-
-    group.putIn(this.draw);
+    return SVG.Group().add(group).add(this.label());
   }
 }
 
 export class Renderer {
   options: OptionsResolved;
-  draw: SVG.Svg;
+  private doc: SVG.Document;
 
-  constructor(options?: OptionsResolved, draw?: SVG.Svg) {
+  constructor(options?: OptionsResolved) {
     this.options = options ?? defaultOptions;
-    this.draw = draw ?? SVG.SVG();
+    this.doc = new SVG.Document();
   }
 
   drawDancer(dancer: DancerResolved) {
-    const renderer = new DancerRenderer(dancer, this.options, this.draw);
-    renderer.drawDancer();
+    const renderer = new DancerRenderer(dancer, this.options, this.doc);
+    this.doc.add(renderer.draw());
   }
 
   resizeImage() {
-    const {
-      layout: { padding: p },
-    } = this.options;
+    this.doc.setViewBox(this.options.layout.padding);
+  }
 
-    const { x, y, w, h } = this.draw.bbox();
-    this.draw.viewbox(x - p, y - p, w + 2 * p, h + 2 * p);
+  get viewBox(): string | undefined {
+    return this.doc.viewBoxAttr;
+  }
+
+  innerContent(): string {
+    return this.doc.innerContent();
+  }
+
+  svg(): string {
+    return this.doc.serialize();
   }
 }

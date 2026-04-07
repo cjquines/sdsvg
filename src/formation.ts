@@ -1,5 +1,3 @@
-import { SVG, registerWindow } from "@svgdotjs/svg.js";
-
 import { Dancer, DancerResolved, resolveDancer } from "./dancer.js";
 import { geometrize } from "./geometry.js";
 import {
@@ -33,19 +31,17 @@ export class Formation {
   }
 
   toElement(element: SVGSVGElement): void {
-    this.drawDancers(new Renderer(this.options, SVG(element)));
+    const renderer = new Renderer(this.options);
+    this.drawDancers(renderer);
+    const viewBox = renderer.viewBox;
+    if (viewBox) element.setAttribute("viewBox", viewBox);
+    element.innerHTML = renderer.innerContent();
   }
 
-  toString(element?: SVGSVGElement): string {
-    const render = new Renderer(this.options, element ? SVG(element) : SVG());
-    this.drawDancers(render);
-    return render.draw.svg();
-  }
-
-  registerWindow(win: Window, doc: Document): void {
-    if (typeof window === "undefined" || typeof document === "undefined") {
-      registerWindow(win, doc);
-    }
+  toString(): string {
+    const renderer = new Renderer(this.options);
+    this.drawDancers(renderer);
+    return renderer.svg();
   }
 }
 
