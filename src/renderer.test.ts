@@ -1,11 +1,10 @@
-import { SVG } from "@svgdotjs/svg.js";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { expect, test } from "vitest";
 
 import { Dancer, resolveDancer } from "./dancer.js";
 import { Options, resolveOptions } from "./options.js";
 import { Renderer } from "./renderer.js";
-import { makeSvg, svgToPng } from "./testutils.js";
+import { svgToPng } from "./testutils.js";
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -15,11 +14,10 @@ async function drawDancers(dancers: Dancer[], options: Options = {}) {
       body: { size: 100 },
       ...options,
     }),
-    SVG(makeSvg()),
   );
   dancers.forEach((dancer) => renderer.drawDancer(resolveDancer(dancer)));
   renderer.resizeImage();
-  return svgToPng(renderer.draw.svg());
+  return svgToPng(renderer.svg());
 }
 
 test("render", async () => {
