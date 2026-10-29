@@ -168,6 +168,12 @@ type LayoutOptions = {
    * Default: { x: 0, y: 0 }.
    */
   origin?: { x: number; y: number };
+  /**
+   * Center the generated SVG on origin, padding the side with fewer dancers
+   * so the origin stays in the middle of the image.
+   * Default: false.
+   */
+  centered?: boolean;
 };
 
 type LayoutOptionsResolved = Simplify<
@@ -276,6 +282,7 @@ export function resolveOptions(options: Readonly<Options>): OptionsResolved {
   );
   r.layout.geometry ??= Geometry.None;
   r.layout.origin ??= { x: 0, y: 0 };
+  r.layout.centered ??= false;
 
   const render: RenderOptionsResolved = {
     idPrefix: options.render?.idPrefix ?? "",

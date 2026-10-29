@@ -275,9 +275,14 @@ export class Document {
     return this.root.bounds();
   }
 
-  setViewBox(padding: number): void {
-    const box = this.computeBounds();
+  setViewBox(padding: number, center?: { x: number; y: number }): void {
+    let box = this.computeBounds();
     if (!box) return;
+    if (center) {
+      const h = Math.max(center.x - box.minX, box.maxX - center.x);
+      const v = Math.max(center.y - box.minY, box.maxY - center.y);
+      box = new Box(center.x - h, center.y - v, center.x + h, center.y + v);
+    }
     this.root.attr(
       "viewBox",
       `${box.minX - padding} ${box.minY - padding} ${box.maxX - box.minX + 2 * padding} ${box.maxY - box.minY + 2 * padding}`,

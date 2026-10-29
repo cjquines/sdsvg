@@ -63,3 +63,21 @@ test("render", async () => {
     ),
   ).toMatchImageSnapshot({ customSnapshotIdentifier: "sample3" });
 });
+
+test("centered", () => {
+  const viewBox = (centered: boolean) => {
+    const svg = formationToSvg(
+      [{ x: 1, y: 1, direction: "north" }, { x: 2, y: 1, direction: "north" }],
+      { layout: { centered, origin: { x: 1, y: 0 } } },
+    );
+    return svg.match(/viewBox="([^"]+)"/)![1]!.split(" ").map(Number);
+  };
+  const [x, y, w, h] = viewBox(true);
+  // origin (1, 0) is 1 * (30 + 20) = 50 svg units across, 0 down
+  expect(x + w / 2).toBeCloseTo(50);
+  expect(y + h / 2).toBeCloseTo(0);
+  // uncentered fits the dancers, so is smaller
+  const [, , w0, h0] = viewBox(false);
+  expect(w).toBeGreaterThan(w0);
+  expect(h).toBeGreaterThan(h0);
+});

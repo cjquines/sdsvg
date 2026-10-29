@@ -151,7 +151,16 @@ export class Renderer {
   }
 
   resizeImage() {
-    this.doc.setViewBox(this.options.layout.padding);
+    const { body, layout } = this.options;
+    this.doc.setViewBox(
+      layout.padding,
+      layout.centered
+        ? {
+            x: layout.origin.x * (body.size + layout.horizontalGap),
+            y: layout.origin.y * (body.size + layout.verticalGap),
+          }
+        : undefined,
+    );
   }
 
   get viewBox(): string | undefined {
