@@ -112,7 +112,9 @@ export class Element {
       if (content) {
         const halfW = (fontSize * 0.6 * content.length) / 2;
         const halfH = fontSize / 2;
-        const cy = y + dy;
+        // y + dy is the baseline; glyphs sit centered ~0.35em above it (which
+        // is why labels use dy="0.35em" to center on y)
+        const cy = y + dy - 0.35 * fontSize;
         return new Box(x - halfW, cy - halfH, x + halfW, cy + halfH);
       }
     }
