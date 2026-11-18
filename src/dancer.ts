@@ -1,5 +1,6 @@
 import ColorJS from "colorjs.io";
 
+import type { BodyOptions, LabelOptions, NoseOptions } from "./options.js";
 import { Enumify, Simplify } from "./utils.js";
 
 export const Direction = {
@@ -43,6 +44,17 @@ export const Shape = {
 
 export type Shape = Enumify<typeof Shape>;
 
+/**
+ * Per-dancer overrides of the global body, nose, and label options. Sizes stay
+ * global, since they set the layout grid. Overrides don't cascade: setting
+ * body.strokeColor here leaves body.fillColor at its global value.
+ */
+export type DancerStyle = {
+  body?: Pick<BodyOptions, "strokeColor" | "fillColor" | "fillOpacity">;
+  nose?: Pick<NoseOptions, "strokeColor" | "fillColor" | "fillOpacity">;
+  label?: Pick<LabelOptions, "color" | "opacity" | "family">;
+};
+
 export type Dancer = {
   /**
    * The dancer's horizontal coordinate, increasing from west to east. Units
@@ -83,6 +95,10 @@ export type Dancer = {
    * Overrides the shape used to draw the dancer's body.
    */
   shape?: Shape;
+  /**
+   * Overrides the global options for this dancer. Takes precedence over color.
+   */
+  style?: DancerStyle;
 };
 
 export function defineDancers(dancers: Dancer[]): Dancer[] {
@@ -90,8 +106,8 @@ export function defineDancers(dancers: Dancer[]): Dancer[] {
 }
 
 export type DancerResolved = Simplify<
-  Required<Omit<Dancer, "color" | "shape" | "direction">> &
-    Pick<Dancer, "color" | "shape"> & {
+  Required<Omit<Dancer, "color" | "shape" | "direction" | "style">> &
+    Pick<Dancer, "color" | "shape" | "style"> & {
       direction: Direction[];
     }
 >;
@@ -108,6 +124,23 @@ export function resolveDancer(dancer: Dancer): DancerResolved {
   r.rotate ??= 0;
   if (r.color) {
     r.color = toHex(r.color);
+  }
+  if (r.style) {
+    const hex = <T extends object>(o: T | undefined): T | undefined =>
+      o &&
+      (Object.fromEntries(
+        Object.entries(o)
+          .filter(([, v]) => v !== undefined)
+          .map(([k, v]) => [
+          k,
+          /color$/i.test(k) && typeof v === "string" ? toHex(v) : v,
+        ]),
+      ) as T);
+    r.style = {
+      body: hex(r.style.body),
+      nose: hex(r.style.nose),
+      label: hex(r.style.label),
+    };
   }
   return r as DancerResolved;
 }

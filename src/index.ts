@@ -1,4 +1,11 @@
-import { Color, Dancer, Direction, Shape, defineDancers } from "./dancer.js";
+import {
+  Color,
+  Dancer,
+  DancerStyle,
+  Direction,
+  Shape,
+  defineDancers,
+} from "./dancer.js";
 import { Formation, formationToSvg } from "./formation.js";
 import { Geometry } from "./geometry.js";
 import { Options, defineOptions } from "./options.js";
@@ -11,6 +18,7 @@ export { Formation, formationToSvg };
 export {
   Color,
   Dancer,
+  DancerStyle,
   Direction,
   Geometry,
   Options,

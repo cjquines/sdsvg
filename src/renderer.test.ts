@@ -61,4 +61,22 @@ test("render", async () => {
       { layout: { horizontalGap: `*2` } },
     ),
   ).toMatchImageSnapshot();
+
+  // style beats color: filled body, separate label color
+  expect(
+    await drawDancers([
+      {
+        x: 0,
+        y: 0,
+        direction: "east",
+        label: "A",
+        color: "red",
+        style: {
+          body: { fillOpacity: 1, strokeColor: "#333" },
+          label: { color: "white" },
+        },
+      },
+      { x: 1, y: 0, direction: "east", label: "B", color: "blue" },
+    ]),
+  ).toMatchImageSnapshot();
 });

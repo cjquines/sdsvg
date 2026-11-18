@@ -19,6 +19,11 @@ formationToSvg(
   [
     { x: 0, y: 0, direction: "north", label: "A", color: "blue" },
     { x: 1, y: 0, direction: ["north", "south"], label: "B", phantom: true },
+    // per-dancer overrides of body/nose/label options; beat `color`
+    {
+      x: 2, y: 0, direction: "east", label: "C", color: "red",
+      style: { body: { fillOpacity: 1, strokeColor: "#333" }, label: { color: "white" } },
+    },
   ],
   { layout: { geometry: "hexagon", origin: { x: 0.5, y: 1.5 } } },
 );

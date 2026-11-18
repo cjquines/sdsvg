@@ -10,7 +10,7 @@ import { Simplify } from "./utils.js";
  */
 type Size = number | `*${number}` | `${number}%`;
 
-type BodyOptions = {
+export type BodyOptions = {
   /**
    * Shape of the dancer's bodies.
    * Default: square.
@@ -56,7 +56,7 @@ type BodyOptionsResolved = Simplify<
   }
 >;
 
-type NoseOptions = {
+export type NoseOptions = {
   /**
    * Shape of the dancer's noses.
    * Default: circle.
@@ -101,7 +101,7 @@ type NoseOptionsResolved = Simplify<
   }
 >;
 
-type LabelOptions = {
+export type LabelOptions = {
   /**
    * Font size of the dancer labels.
    * Default: 0.8 * body size.

@@ -8,11 +8,26 @@ class DancerRenderer {
   private maskId: string | undefined;
   private maskEl: SVG.Element | undefined;
 
+  public options: OptionsResolved;
+
   constructor(
     public dancer: DancerResolved,
-    public options: OptionsResolved,
+    options: OptionsResolved,
     private doc: SVG.Document,
   ) {
+    // global options < dancer.color < dancer.style
+    const { color, style } = dancer;
+    const c = color ? { strokeColor: color, fillColor: color } : {};
+    this.options = {
+      ...options,
+      body: { ...options.body, ...c, ...style?.body },
+      nose: { ...options.nose, ...c, ...style?.nose },
+      label: {
+        ...options.label,
+        ...(color && { color }),
+        ...style?.label,
+      },
+    };
     const { x, y } = dancer;
     const { body, layout } = options;
     this.cx = x * (body.size + layout.horizontalGap);
@@ -32,13 +47,13 @@ class DancerRenderer {
   }
 
   private body(): { element: SVG.Element | undefined; shape: Shape } {
-    const { color, phantom } = this.dancer;
+    const { phantom } = this.dancer;
     const { body } = this.options;
     const shape = this.dancer.shape ?? body.shape;
     const element = SVG.Shape(shape, this.cx, this.cy, body.size)
-      ?.fill(color ?? body.fillColor, body.fillOpacity)
+      ?.fill(body.fillColor, body.fillOpacity)
       ?.stroke(
-        color ?? body.strokeColor,
+        body.strokeColor,
         body.strokeWidth,
         phantom ? body.phantomDashArray.join(",") : undefined,
       );
@@ -61,7 +76,6 @@ class DancerRenderer {
         strokeWidth,
       },
     } = this.options;
-    const { color } = this.dancer;
 
     if (shape === Shape.None) return undefined;
 
@@ -82,8 +96,8 @@ class DancerRenderer {
     const cy = this.cy + mulY * (bodySize / 2 + distance);
 
     const nose = SVG.Shape(shape, cx, cy, size)
-      ?.fill(color ?? fillColor, fillOpacity)
-      ?.stroke(color ?? strokeColor, strokeWidth);
+      ?.fill(fillColor, fillOpacity)
+      ?.stroke(strokeColor, strokeWidth);
     if (!nose) return undefined;
 
     if (hasBody) {
@@ -96,7 +110,7 @@ class DancerRenderer {
   }
 
   private label(): SVG.Element {
-    const { color, label: labelText } = this.dancer;
+    const { label: labelText } = this.dancer;
     const { label } = this.options;
     return SVG.Text(labelText, {
       x: this.cx,
@@ -105,7 +119,7 @@ class DancerRenderer {
       "text-anchor": "middle",
       "font-family": label.family,
       "font-size": label.size,
-    }).fill(color ?? label.color, label.opacity);
+    }).fill(label.color, label.opacity);
   }
 
   draw(): SVG.Element {
